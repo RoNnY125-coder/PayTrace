@@ -14,9 +14,8 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
   const [data, setData] = useState<InvestigationResult | null>(null);
   const [explanation, setExplanation] = useState<string>('');
   const [loadingExplanation, setLoadingExplanation] = useState(false);
-  const [retriggered, setRetriggered] = useState(false);
-  const [escalated, setEscalated] = useState(false);
-  const [inputTx, setInputTx] = useState(currentTx);
+  const [retriggered] = useState(false);
+  const [, setInputTx] = useState(currentTx);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -27,8 +26,6 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
-    setRetriggered(false);
-    setEscalated(false);
     setInputTx(currentTx);
 
     // 1. Fetch Investigation Details
@@ -207,11 +204,11 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <span className="material-symbols-outlined text-[42px] text-blue-600 animate-spin">sync</span>
-        <h2 className="text-headline-md font-semibold text-primary dark:text-white">
+        <div className="w-12 h-12 rounded-full border-3 border-[#9FE870] border-t-[#163300] dark:border-t-white animate-spin" />
+        <h2 className="text-xl font-bold text-[#163300] dark:text-white">
           Ingesting Ledger Telemetry for {currentTx}...
         </h2>
-        <p className="text-body-sm text-on-surface-variant dark:text-slate-400">
+        <p className="text-sm text-[#596859] dark:text-[#9DA99D]">
           Cross-referencing gateway.csv, bank.csv, and ledger.csv
         </p>
       </div>
@@ -220,19 +217,19 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
 
   if (!data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-gutter text-center">
-        <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-600">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-600">
           <span className="material-symbols-outlined text-[32px]">error</span>
         </div>
-        <h2 className="text-headline-lg font-semibold text-primary dark:text-white">
+        <h2 className="text-2xl font-bold text-[#163300] dark:text-white">
           Transaction '{currentTx}' Not Found
         </h2>
-        <p className="text-body-md text-on-surface-variant dark:text-slate-400 max-w-md">
+        <p className="text-sm text-[#596859] dark:text-[#9DA99D] max-w-md">
           This transaction ID does not exist in the active CSV audit datasets (gateway.csv, bank.csv, ledger.csv).
         </p>
         <button
           onClick={() => setActivePage('dashboard')}
-          className="px-5 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+          className="mt-2 px-6 py-3 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
         >
           Return to Ledger Dashboard
         </button>
@@ -242,41 +239,43 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
 
   const isSettled = data.overall_status === 'SETTLED';
   const isDelayed = data.overall_status === 'DELAYED' || data.overall_status === 'LEDGER_DELAY';
-  const isCritical = data.overall_status === 'CRITICAL_EXCEPTION';
   const hasExceptions = data.exceptions.length > 0;
 
   return (
-    <div className="flex flex-col w-full px-gutter py-6 gap-6 max-w-7xl mx-auto pb-28">
+    <div className="flex flex-col w-full px-4 sm:px-6 py-6 gap-6 max-w-7xl mx-auto pb-28">
       {/* ── 1. HEADER & BREADCRUMB ────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-label-sm text-on-surface-variant dark:text-slate-400 font-mono">
-          <button onClick={() => setActivePage('dashboard')} className="hover:text-on-surface dark:hover:text-white transition-colors">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2 text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
+          <button 
+            onClick={() => setActivePage('dashboard')} 
+            className="hover:text-[#163300] dark:hover:text-white transition-colors"
+          >
             Ledger Dashboard
           </button>
           <span>/</span>
           <span>Cases</span>
           <span>/</span>
-          <span className="text-blue-600 dark:text-blue-400 font-semibold">{data.transaction_id}</span>
+          <span className="text-[#163300] dark:text-[#9FE870] font-bold">{data.transaction_id}</span>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <button 
               onClick={() => setActivePage('dashboard')} 
-              className="w-10 h-10 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl hover:bg-white dark:hover:bg-slate-700 border border-white/80 dark:border-white/10 flex items-center justify-center transition-colors text-on-surface dark:text-white shadow-sm"
+              className="w-10 h-10 rounded-full bg-white dark:bg-[#131A13] hover:bg-[#F4F5F7] dark:hover:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex items-center justify-center transition-all hover:scale-105 active:scale-95 text-[#163300] dark:text-white shadow-sm"
               title="Back to Dashboard"
             >
               <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             </button>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-mono font-bold text-primary dark:text-white tracking-tight text-[28px]">
+              <div className="flex items-center gap-3">
+                <h1 className="font-mono font-extrabold text-[#163300] dark:text-white tracking-tight text-[28px] sm:text-[32px]">
                   {data.transaction_id}
                 </h1>
-                <span className={`px-2.5 py-0.5 rounded-full text-label-sm font-mono font-semibold border ${
-                  isSettled ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20' :
-                  isDelayed ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20' :
-                  'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20'
+                <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold border ${
+                  isSettled ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
+                  isDelayed ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269] dark:border-[#FFD269]/30' :
+                  'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A] dark:border-[#FCA5A5]/30'
                 }`}>
                   {data.overall_status}
                 </span>
@@ -284,41 +283,42 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
             </div>
           </div>
 
+          {/* Wise Action Buttons: Export PDF & Share */}
           <div className="flex items-center gap-2.5">
             <button 
               onClick={handleExportPDF}
-              className="px-4 py-2 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl hover:bg-white dark:hover:bg-slate-700 border border-white/80 dark:border-white/10 text-on-surface dark:text-white text-body-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+              className="px-5 py-2.5 rounded-full bg-white dark:bg-[#131A13] hover:bg-[#F4F5F7] dark:hover:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] text-[#163300] dark:text-white text-xs sm:text-sm font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 shadow-sm"
               title="Download official PDF audit report"
             >
-              <span className="material-symbols-outlined text-[16px] text-red-500">picture_as_pdf</span>
-              Export PDF Audit
+              <span className="material-symbols-outlined text-[18px] text-[#9E1B1B]">picture_as_pdf</span>
+              <span>Export PDF Audit</span>
             </button>
             <button 
               onClick={handleShare}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-body-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+              className="px-5 py-2.5 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] text-xs sm:text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 shadow-sm"
               title="Share verified case telemetry"
             >
-              <span className="material-symbols-outlined text-[16px]">share</span>
-              Share Case
+              <span className="material-symbols-outlined text-[18px]">share</span>
+              <span>Share Case</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* ── 2. SETTLEMENT OVERVIEW BANNER CARD ─────────────────────────────── */}
-      <div className="w-full bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl rounded-3xl p-6 shadow-sm border border-white/80 dark:border-white/10 relative overflow-hidden">
-        <div className={`absolute top-0 left-0 w-1.5 h-full ${
-          retriggered ? 'bg-emerald-500' :
-          isSettled ? 'bg-emerald-500' :
+      <div className="w-full bg-white dark:bg-[#131A13] rounded-3xl p-6 sm:p-7 shadow-sm border border-[#E2E5E9] dark:border-[#273827] relative overflow-hidden">
+        <div className={`absolute top-0 left-0 w-2 h-full ${
+          retriggered ? 'bg-[#9FE870]' :
+          isSettled ? 'bg-[#9FE870]' :
           isDelayed ? 'bg-amber-500' : 'bg-red-500'
         }`} />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-start gap-4">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
-              retriggered || isSettled ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' :
-              isDelayed ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400' :
-              'bg-red-500/10 text-red-700 dark:text-red-400'
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
+              retriggered || isSettled ? 'bg-[#EBF8E3] text-[#163300] dark:bg-[#1A2B1A] dark:text-[#9FE870]' :
+              isDelayed ? 'bg-[#FFF2CC] text-[#875800] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
+              'bg-[#FDE8E8] text-[#9E1B1B] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
             }`}>
               <span className="material-symbols-outlined text-[26px]">
                 {retriggered || isSettled ? 'check_circle' : isDelayed ? 'warning' : 'error'}
@@ -326,14 +326,14 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-label-sm font-semibold uppercase text-on-surface-variant dark:text-slate-400">
+                <span className="font-mono text-xs font-bold uppercase text-[#596859] dark:text-[#9DA99D]">
                   Engine Classification:
                 </span>
-                <span className="font-mono text-body-sm font-bold text-primary dark:text-white">
+                <span className="font-mono text-xs font-bold text-[#163300] dark:text-[#9FE870]">
                   {retriggered ? 'MANUALLY_RECONCILED' : data.overall_status}
                 </span>
               </div>
-              <h2 className="font-headline-lg text-primary dark:text-white font-semibold text-[20px]">
+              <h2 className="text-[#163300] dark:text-white font-extrabold text-[19px] sm:text-[22px] tracking-tight">
                 {retriggered ? 'Settlement Synchronized with Internal Ledger' : 
                  data.overall_status === 'SETTLED' ? 'Multi-Rail Settlement Verified Clean' :
                  data.overall_status === 'CRITICAL_EXCEPTION' ? 'Deterministic Discrepancy Flagged Across Settlement Rails' :
@@ -346,28 +346,28 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
           </div>
 
           {/* 4 Summary Pills */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/5 font-mono">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] font-mono">
             <div className="flex flex-col">
-              <span className="text-[11px] text-on-surface-variant dark:text-slate-400">Case ID</span>
-              <span className="text-body-sm font-bold text-primary dark:text-white">{data.transaction_id}</span>
+              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Case ID</span>
+              <span className="text-sm font-bold text-[#163300] dark:text-white">{data.transaction_id}</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] text-on-surface-variant dark:text-slate-400">Settlement Amount</span>
-              <span className="text-body-sm font-bold text-primary dark:text-white">
+              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Settlement Amount</span>
+              <span className="text-sm font-bold text-[#163300] dark:text-white">
                 {data.currency === 'USD' ? '$' : '₹'}{data.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] text-on-surface-variant dark:text-slate-400">Delay Point</span>
-              <span className={`text-body-sm font-bold ${data.delay_point ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Delay Point</span>
+              <span className={`text-sm font-bold ${data.delay_point ? 'text-amber-600 dark:text-amber-400' : 'text-[#2D5A0F] dark:text-[#9FE870]'}`}>
                 {data.delay_point || 'None (Clean)'}
               </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] text-on-surface-variant dark:text-slate-400">Deterministic Confidence</span>
-              <div className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${data.confidence === 'HIGH' ? 'bg-emerald-500' : data.confidence === 'MEDIUM' ? 'bg-amber-500' : 'bg-red-500'}`} />
-                <span className="text-body-sm font-bold text-primary dark:text-white">{data.confidence}</span>
+              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Deterministic Confidence</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className={`w-2 h-2 rounded-full ${data.confidence === 'HIGH' ? 'bg-[#9FE870]' : data.confidence === 'MEDIUM' ? 'bg-amber-500' : 'bg-red-500'}`} />
+                <span className="text-sm font-bold text-[#163300] dark:text-white">{data.confidence}</span>
               </div>
             </div>
           </div>
@@ -377,145 +377,149 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
       {/* ── 3. THREE-NODE MULTI-HOP RECONCILIATION PIPELINE ────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Node 1: Payment Gateway */}
-        <div className="bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl rounded-3xl p-6 shadow-sm border border-white/80 dark:border-white/10 flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#131A13] rounded-3xl p-6 shadow-sm border border-[#E2E5E9] dark:border-[#273827] flex flex-col justify-between hover:shadow-md transition-all">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-label-sm font-mono text-on-surface-variant dark:text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider">
                 1. Gateway Node
               </span>
-              <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${
-                data.gateway.found ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20' : 'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20'
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${
+                data.gateway.found ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' : 'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5]'
               }`}>
                 {data.gateway.found ? data.gateway.status : 'NOT_FOUND'}
               </span>
             </div>
-            <div className="font-mono text-[24px] font-bold text-primary dark:text-white mb-1">
+            <div className="font-mono text-[26px] font-black text-[#163300] dark:text-white mb-1">
               {data.gateway.currency === 'USD' ? '$' : '₹'}{data.gateway.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
             </div>
-            <div className="text-body-sm text-on-surface-variant dark:text-slate-400">
+            <div className="text-xs text-[#596859] dark:text-[#9DA99D]">
               Payment Gateway Capture Event
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm font-mono text-on-surface-variant dark:text-slate-400">
+          <div className="mt-5 pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
             <span>Captured At:</span>
-            <span className="text-primary dark:text-white">{data.gateway.timestamp || 'N/A'}</span>
+            <span className="text-[#163300] dark:text-white font-semibold">{data.gateway.timestamp || 'N/A'}</span>
           </div>
         </div>
 
         {/* Node 2: Bank Statement */}
-        <div className={`bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl rounded-3xl p-6 shadow-sm border flex flex-col justify-between relative ${
-          data.delay_point === 'BANK' ? 'border-amber-500/50 ring-1 ring-amber-500/20' : 'border-white/80 dark:border-white/10'
+        <div className={`bg-white dark:bg-[#131A13] rounded-3xl p-6 shadow-sm border flex flex-col justify-between relative hover:shadow-md transition-all ${
+          data.delay_point === 'BANK' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-[#E2E5E9] dark:border-[#273827]'
         }`}>
           {data.delay_point === 'BANK' && (
-            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
               Identified Bottleneck
             </div>
           )}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-label-sm font-mono text-on-surface-variant dark:text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider">
                 2. Core Banking Node
               </span>
-              <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${
-                data.bank.status === 'SETTLED' ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20' :
-                data.bank.status === 'PENDING' ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20' :
-                'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20'
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${
+                data.bank.status === 'SETTLED' ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
+                data.bank.status === 'PENDING' ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
+                'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
               }`}>
                 {data.bank.found ? data.bank.status : 'MISSING_IN_BANK'}
               </span>
             </div>
-            <div className="font-mono text-[24px] font-bold text-primary dark:text-white mb-1">
+            <div className="font-mono text-[26px] font-black text-[#163300] dark:text-white mb-1">
               {data.bank.currency === 'USD' ? '$' : '₹'}{data.bank.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
             </div>
-            <div className="text-body-sm text-on-surface-variant dark:text-slate-400">
+            <div className="text-xs text-[#596859] dark:text-[#9DA99D]">
               Bank Statement &amp; Settlement File
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm font-mono text-on-surface-variant dark:text-slate-400">
+          <div className="mt-5 pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
             <span>Settled At:</span>
-            <span className="text-primary dark:text-white">{data.bank.settled_at || 'Pending settlement'}</span>
+            <span className="text-[#163300] dark:text-white font-semibold">{data.bank.settled_at || 'Pending settlement'}</span>
           </div>
         </div>
 
         {/* Node 3: General Ledger */}
-        <div className={`bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl rounded-3xl p-6 shadow-sm border flex flex-col justify-between relative ${
-          data.delay_point === 'LEDGER' ? 'border-amber-500/50 ring-1 ring-amber-500/20' : 'border-white/80 dark:border-white/10'
+        <div className={`bg-white dark:bg-[#131A13] rounded-3xl p-6 shadow-sm border flex flex-col justify-between relative hover:shadow-md transition-all ${
+          data.delay_point === 'LEDGER' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-[#E2E5E9] dark:border-[#273827]'
         }`}>
           {data.delay_point === 'LEDGER' && (
-            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
               Identified Bottleneck
             </div>
           )}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-label-sm font-mono text-on-surface-variant dark:text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider">
                 3. General Ledger Node
               </span>
-              <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${
-                data.ledger.status === 'POSTED' ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20' :
-                data.ledger.status === 'PENDING' ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20' :
-                'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20'
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${
+                data.ledger.status === 'POSTED' ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
+                data.ledger.status === 'PENDING' ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
+                'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
               }`}>
                 {data.ledger.found ? data.ledger.status : 'NOT_POSTED'}
               </span>
             </div>
-            <div className="font-mono text-[24px] font-bold text-primary dark:text-white mb-1">
+            <div className="font-mono text-[26px] font-black text-[#163300] dark:text-white mb-1">
               {data.ledger.currency === 'USD' ? '$' : '₹'}{data.ledger.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
             </div>
-            <div className="text-body-sm text-on-surface-variant dark:text-slate-400">
+            <div className="text-xs text-[#596859] dark:text-[#9DA99D]">
               Core Double-Entry Accounting System
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm font-mono text-on-surface-variant dark:text-slate-400">
+          <div className="mt-5 pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
             <span>Posted At:</span>
-            <span className="text-primary dark:text-white">{data.ledger.posted_at || 'Pending posting'}</span>
+            <span className="text-[#163300] dark:text-white font-semibold">{data.ledger.posted_at || 'Pending posting'}</span>
           </div>
         </div>
       </div>
 
       {/* ── 4. EXCEPTIONS CALLOUT (WHEN ANOMALY DETECTED) ──────────────────── */}
       {hasExceptions && (
-        <div className="w-full bg-red-500/[0.04] dark:bg-red-950/20 backdrop-blur-2xl rounded-3xl p-6 border border-red-500/20 dark:border-red-900/30 flex flex-col gap-4">
+        <div className="w-full bg-[#FFF5F5] dark:bg-[#201010] rounded-3xl p-6 sm:p-7 border border-[#FCA5A5] dark:border-[#521E1E] flex flex-col gap-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-[24px]">gpp_maybe</span>
-              <h3 className="font-semibold text-red-900 dark:text-red-300 text-[18px]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center">
+                <span className="material-symbols-outlined text-[22px]">gpp_maybe</span>
+              </div>
+              <h3 className="font-bold text-[#9E1B1B] dark:text-[#FF8A8A] text-[18px]">
                 Deterministic Rule Exceptions Flagged ({data.exceptions.length})
               </h3>
             </div>
-            <span className="text-label-sm font-mono text-red-700 dark:text-red-300 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+            <span className="text-xs font-mono font-bold text-[#9E1B1B] dark:text-[#FF8A8A] bg-red-500/10 px-3.5 py-1 rounded-full border border-red-500/20">
               Requires Operational Review
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {data.exceptions.map((exc, idx) => (
-              <div key={idx} className="p-3.5 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-red-500/15 font-mono text-body-sm flex items-start gap-2 text-red-900 dark:text-red-200">
-                <span className="material-symbols-outlined text-[18px] text-red-500 mt-0.5">error</span>
-                <span>{exc}</span>
+              <div key={idx} className="p-4 rounded-2xl bg-white dark:bg-[#2B1515] border border-red-500/20 font-mono text-xs flex items-start gap-2.5 text-[#9E1B1B] dark:text-[#FF8A8A] shadow-sm">
+                <span className="material-symbols-outlined text-[18px] text-red-500 mt-0.5 shrink-0">error</span>
+                <span className="font-semibold">{exc}</span>
               </div>
             ))}
           </div>
 
           {/* Amount / Currency discrepancy breakdown if present */}
           {data.gateway.amount !== data.bank.amount && data.gateway.found && data.bank.found && (
-            <div className="p-4 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+            <div className="p-4 rounded-2xl bg-white dark:bg-[#251212] border border-red-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono shadow-sm">
               <div>
-                <span className="text-[11px] text-on-surface-variant dark:text-slate-400">Gateway Captured:</span>
-                <div className="text-body-lg font-bold text-primary dark:text-white">
+                <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Gateway Captured:</span>
+                <div className="text-base font-bold text-[#163300] dark:text-white">
                   {data.gateway.currency} {data.gateway.amount}
                 </div>
               </div>
-              <div className="text-red-600 font-bold">≠ Mismatch ≠</div>
+              <div className="text-red-600 font-bold px-3 py-1 rounded-full bg-red-500/10 text-xs">
+                ≠ Mismatch ≠
+              </div>
               <div>
-                <span className="text-[11px] text-on-surface-variant dark:text-slate-400">Bank Credited:</span>
-                <div className="text-body-lg font-bold text-red-600 dark:text-red-400">
+                <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Bank Credited:</span>
+                <div className="text-base font-bold text-red-600 dark:text-red-400">
                   {data.bank.currency} {data.bank.amount}
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[11px] text-on-surface-variant dark:text-slate-400">Variance Delta:</span>
-                <div className="text-body-lg font-bold text-red-600 dark:text-red-400">
+                <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Variance Delta:</span>
+                <div className="text-base font-bold text-red-600 dark:text-red-400">
                   {((data.gateway.amount || 0) - (data.bank.amount || 0)) > 0 ? '-' : '+'}
                   {data.gateway.currency} {Math.abs((data.gateway.amount || 0) - (data.bank.amount || 0)).toFixed(2)}
                 </div>
@@ -528,76 +532,78 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
       {/* ── 5. GEMINI AI INVESTIGATION & AUDIT EVIDENCE BREAKDOWN ──────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gemini AI Natural Language Reasoning Panel */}
-        <div className="bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl rounded-3xl p-6 shadow-sm border border-white/80 dark:border-white/10 flex flex-col justify-between gap-4">
-          <div className="flex flex-col gap-3">
+        <div className="bg-white dark:bg-[#131A13] rounded-3xl p-6 sm:p-7 shadow-sm border border-[#E2E5E9] dark:border-[#273827] flex flex-col justify-between gap-4">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[18px]">neurology</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#9FE870] text-[#163300] flex items-center justify-center font-bold shadow-sm">
+                  <span className="material-symbols-outlined text-[20px]">neurology</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-primary dark:text-white text-[17px]">
-                    AI Investigation
+                  <h3 className="font-extrabold text-[#163300] dark:text-white text-[18px]">
+                    AI Analysis
                   </h3>
-                  <div className="text-[11px] text-on-surface-variant dark:text-slate-400 font-mono">
-                    Zero-Hallucination Fact Explanation Model
+                  <div className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
+                    Multi-Rail Transfer Breakdown
                   </div>
                 </div>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full text-label-sm font-mono bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
-                Verified Facts Only
+              <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#EBF8E3] text-[#163300] border border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30">
+                Verified Facts
               </span>
             </div>
 
             {loadingExplanation ? (
-              <div className="py-8 flex flex-col items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-[28px] text-blue-600 animate-spin">sync</span>
-                <span className="text-body-sm text-on-surface-variant dark:text-slate-400 font-mono">
-                  Synthesizing verified multi-hop evidence with AI...
+              <div className="py-10 flex flex-col items-center justify-center gap-3">
+                <div className="w-8 h-8 rounded-full border-3 border-[#9FE870] border-t-[#163300] dark:border-t-white animate-spin" />
+                <span className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
+                  Synthesizing multi-rail evidence...
                 </span>
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 text-body-sm text-on-surface dark:text-slate-200 font-mono whitespace-pre-line leading-relaxed">
-                {explanation || 'No AI explanation generated yet.'}
+              <div className="p-5 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] text-xs sm:text-sm text-[#163300] dark:text-slate-200 font-mono whitespace-pre-line leading-relaxed">
+                {explanation || 'No explanation generated yet.'}
               </div>
             )}
           </div>
 
-          <div className="pt-3 border-t border-black/[0.04] dark:border-white/10 flex items-center justify-between text-[12px] font-mono text-on-surface-variant dark:text-slate-400">
-            <span>Model: AI Investigation Engine</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-              <span className="material-symbols-outlined text-[14px]">verified</span>
+          <div className="pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
+            <span>Engine: PayTrace AI</span>
+            <span className="text-[#2D5A0F] dark:text-[#9FE870] font-bold flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">verified</span>
               Fact-Checked
             </span>
           </div>
         </div>
 
         {/* Deterministic Evidence Breakdown */}
-        <div className="bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl rounded-3xl p-6 shadow-sm border border-white/80 dark:border-white/10 flex flex-col justify-between gap-4">
-          <div className="flex flex-col gap-3">
+        <div className="bg-white dark:bg-[#131A13] rounded-3xl p-6 sm:p-7 shadow-sm border border-[#E2E5E9] dark:border-[#273827] flex flex-col justify-between gap-4">
+          <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[22px]">database</span>
-                <h3 className="font-semibold text-primary dark:text-white text-[17px]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#163300] text-[#9FE870] dark:bg-[#1A261A] dark:text-[#9FE870] flex items-center justify-center font-bold shadow-sm">
+                  <span className="material-symbols-outlined text-[20px]">database</span>
+                </div>
+                <h3 className="font-extrabold text-[#163300] dark:text-white text-[18px]">
                   Verified Evidence Trail
                 </h3>
               </div>
-              <span className="text-label-sm font-mono text-on-surface-variant dark:text-slate-400">
+              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827]">
                 {data.evidence.length} Fact Points
               </span>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5">
               {data.evidence.map((ev, i) => (
-                <div key={i} className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 flex items-start gap-2.5 text-body-sm text-on-surface dark:text-slate-300">
-                  <span className="material-symbols-outlined text-[18px] text-blue-600 dark:text-blue-400 mt-0.5 shrink-0">check_circle</span>
+                <div key={i} className="p-3.5 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex items-start gap-3 text-xs sm:text-sm text-[#163300] dark:text-slate-200">
+                  <span className="material-symbols-outlined text-[18px] text-[#2D5A0F] dark:text-[#9FE870] mt-0.5 shrink-0">check_circle</span>
                   <span>{ev}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="pt-3 border-t border-black/[0.04] dark:border-white/10 flex items-center justify-between text-[12px] font-mono text-on-surface-variant dark:text-slate-400">
+          <div className="pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
             <span>Audit Engine: Deterministic Rules v4.2</span>
             <span>Dataset: PayTrace Live CSV</span>
           </div>
@@ -606,8 +612,8 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-8 right-8 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-slate-900/90 dark:bg-white/90 text-white dark:text-slate-900 shadow-2xl backdrop-blur-xl border border-white/20 font-mono text-body-sm transition-all animate-fade-in">
-          <span className="material-symbols-outlined text-emerald-400 dark:text-emerald-600 text-[20px]">check_circle</span>
+        <div className="fixed bottom-8 right-8 z-50 flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#163300] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#163300] shadow-2xl border border-[#9FE870]/30 font-mono text-xs sm:text-sm font-bold transition-all animate-bounce">
+          <span className="material-symbols-outlined text-[20px]">check_circle</span>
           <span>{toastMessage}</span>
         </div>
       )}

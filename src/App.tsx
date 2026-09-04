@@ -64,15 +64,15 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface dark:bg-dark-bg font-body-md text-on-surface dark:text-slate-100 bg-[radial-gradient(#c5c6cf_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] transition-colors duration-300 relative">
-      {/* Subtle Apple-style Ambient Refraction Glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[320px] bg-gradient-to-b from-blue-500/10 via-indigo-500/5 to-transparent dark:from-blue-600/10 dark:via-cyan-500/5 dark:to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+    <div className="min-h-screen bg-[#F4F5F7] dark:bg-[#0C110C] font-sans text-[#163300] dark:text-[#F2F5F2] transition-colors duration-300 relative selection:bg-[#9FE870] selection:text-[#163300]">
+      {/* Wise Signature Lime Green Ambient Glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-[#9FE870]/20 via-[#9FE870]/5 to-transparent dark:from-[#9FE870]/12 dark:via-[#163300]/30 dark:to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
-      {/* Floating Centered Glass Navbar */}
+      {/* Floating Centered Wise Pill Navbar */}
       <Navbar activePage={activePage} setActivePage={setActivePage} />
 
       {/* Main Content Area with appropriate top padding for floating navbar */}
-      <main className="w-full pt-24 min-h-[calc(100vh-6rem)]">
+      <main className={`w-full ${activePage === 'home' ? 'pt-18 sm:pt-20' : 'pt-28'} min-h-[calc(100vh-6rem)]`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activePage}
