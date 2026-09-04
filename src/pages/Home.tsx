@@ -254,21 +254,21 @@ export const Home: React.FC<HomeProps> = ({ setActivePage, setSelectedTxId }) =>
             </div>
           </div>
 
-          {/* Metric 3: Anomaly & Exception Flagging */}
+          {/* Metric 3: Anomaly & Exception Detection */}
           <div className="p-6 rounded-2xl bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] flex flex-col justify-between">
             <div className="flex items-center justify-between mb-4">
               <span className="text-label-sm text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-mono">
                 Exception Detection
               </span>
-              <span className="p-2 rounded-xl bg-red-500/10 dark:bg-red-950/60 text-red-600 dark:text-red-400">
-                <span className="material-symbols-outlined text-[20px]">shield_alert</span>
+              <span className="p-2 rounded-xl bg-amber-500/10 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
+                <span className="material-symbols-outlined text-[20px]">warning</span>
               </span>
             </div>
             <div>
-              <div className="font-headline-xl text-red-600 dark:text-red-400 font-mono mb-1 font-bold text-[32px]">
+              <div className="font-headline-xl text-primary dark:text-white font-mono mb-1 font-bold text-[32px]">
                 {meta.status_counts['CRITICAL_EXCEPTION'] + meta.status_counts['EXCEPTION'] + meta.status_counts['DATA_INCONSISTENCY']}
               </div>
-              <div className="flex items-center gap-1 text-body-sm text-red-600 dark:text-red-400 font-medium">
+              <div className="flex items-center gap-1 text-body-sm text-amber-600 dark:text-amber-400 font-medium">
                 <span className="material-symbols-outlined text-[16px]">warning</span>
                 <span>Amount &amp; Currency Discrepancies Caught</span>
               </div>

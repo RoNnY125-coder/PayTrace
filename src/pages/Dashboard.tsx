@@ -78,6 +78,56 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
     setActivePage('investigation');
   };
 
+  const handleExportCSV = () => {
+    const headers = [
+      'Transaction ID',
+      'Overall Status',
+      'Amount',
+      'Currency',
+      'Gateway Status',
+      'Bank Status',
+      'Ledger Status',
+      'Gateway Amount',
+      'Bank Amount',
+      'Ledger Amount',
+      'Delay Point',
+      'Exceptions',
+      'Recommended Action'
+    ];
+
+    const rows = filtered.map(t => [
+      `"${t.transaction_id}"`,
+      `"${t.overall_status}"`,
+      t.amount ?? '',
+      `"${t.currency || 'INR'}"`,
+      `"${t.gateway.status || ''}"`,
+      `"${t.bank.status || ''}"`,
+      `"${t.ledger.status || ''}"`,
+      t.gateway.amount ?? '',
+      t.bank.amount ?? '',
+      t.ledger.amount ?? '',
+      `"${t.delay_point || 'None'}"`,
+      `"${t.exceptions.join('; ')}"`,
+      `"${(t.recommended_action || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.join(','))
+    ].join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const dateTag = selectedDate === 'ALL' ? 'all_batches' : selectedDate;
+    link.setAttribute('download', `paytrace_settlement_audit_${dateTag}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex flex-col w-full px-gutter py-6 gap-6 max-w-7xl mx-auto pb-24">
       {/* ── HEADER & DATE SELECTOR ─────────────────────────────────────────── */}
@@ -119,10 +169,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
 
           <button 
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-body-sm font-medium transition-all shadow-sm active:scale-[0.98]" 
-            onClick={() => alert(`Exporting audit log for ${filtered.length} transactions in active view...`)}
+            onClick={handleExportCSV}
+            title={`Export ${filtered.length} transactions as CSV`}
           >
             <span className="material-symbols-outlined text-[18px]">download</span>
-            <span>Export CSV</span>
+            <span>Export CSV ({filtered.length})</span>
           </button>
         </div>
       </div>
