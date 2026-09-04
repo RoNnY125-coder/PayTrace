@@ -71,3 +71,19 @@ class DateSummary(BaseModel):
     rejected: int
     exceptions: int
     transactions: list[str]
+
+
+class ChatMessage(BaseModel):
+    role: str  # "user" | "assistant"
+    content: str
+
+
+class ChatRequest(BaseModel):
+    transaction_id: str
+    message: str
+    history: list[ChatMessage] = []
+
+
+class ChatResponse(BaseModel):
+    transaction_id: str
+    reply: str
