@@ -92,7 +92,7 @@ export const App: React.FC = () => {
               <Investigation txId={selectedTxId} setActivePage={setActivePage} />
             )}
             {activePage === 'states-debug' && (
-              <StatesDebug />
+              <StatesDebug setActivePage={setActivePage} setSelectedTxId={setSelectedTxId} />
             )}
           </motion.div>
         </AnimatePresence>

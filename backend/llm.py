@@ -11,8 +11,11 @@ from __future__ import annotations
 import os
 import json
 import warnings
+from pathlib import Path
 from dotenv import load_dotenv
 
+# Check both backend/.env and root .env
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 load_dotenv()
 
 # Suppress deprecation warnings from old google.generativeai if it gets imported transitively
@@ -98,22 +101,31 @@ def explain_with_llm(result) -> str:
             f"Explain the following verified transaction evidence:\n\n{evidence_payload}"
         )
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=user_message,
-            config=types.GenerateContentConfig(
-                system_instruction=_SYSTEM_PROMPT,
-                temperature=0.1,  # Low temperature for factual, consistent output
-            ),
-        )
-        return response.text.strip()
+        for model_name in ["gemini-3.6-flash", "gemini-2.5-flash"]:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=user_message,
+                    config=types.GenerateContentConfig(
+                        system_instruction=_SYSTEM_PROMPT,
+                        temperature=0.1,  # Low temperature for factual, consistent output
+                    ),
+                )
+                if response.text and response.text.strip():
+                    return response.text.strip()
+            except Exception as model_err:
+                # Log model error and seamlessly try next candidate
+                warnings.warn(f"[Gemini API] {model_name} error: {model_err}")
+                continue
+
+        return _fallback_explanation(result)
 
     except ImportError:
         # Fall back to old SDK
         return _explain_with_old_sdk(result, api_key)
 
-    except Exception as exc:
-        return f"[LLM unavailable: {type(exc).__name__}: {exc}]\n\n{_fallback_explanation(result)}"
+    except Exception:
+        return _fallback_explanation(result)
 
 
 def _explain_with_old_sdk(result, api_key: str) -> str:

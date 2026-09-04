@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavPage } from '../types';
+import { getDatasetMeta, getAllLocalTransactions } from '../services/api';
 
 interface HomeProps {
   setActivePage: (page: NavPage) => void;
@@ -7,273 +8,356 @@ interface HomeProps {
 }
 
 export const Home: React.FC<HomeProps> = ({ setActivePage, setSelectedTxId }) => {
-  const [txInput, setTxInput] = useState('tx_984192841');
-  const [dateInput, setDateInput] = useState('2023-10-24');
+  const [txInput, setTxInput] = useState('DEMO004');
+  const [selectedDate, setSelectedDate] = useState('2026-09-01');
+
+  const meta = getDatasetMeta();
+  const allTx = getAllLocalTransactions();
+
+  // Pick notable benchmark scenarios from the CSV
+  const benchmarkScenarios = [
+    { id: 'DEMO001', label: 'DEMO001', desc: 'Settled Match', color: 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+    { id: 'DEMO002', label: 'DEMO002', desc: 'Bank Delay', color: 'text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20' },
+    { id: 'DEMO003', label: 'DEMO003', desc: 'Ledger Delay', color: 'text-sky-700 dark:text-sky-400 bg-sky-500/10 border-sky-500/20' },
+    { id: 'DEMO004', label: 'DEMO004', desc: 'Amount Mismatch (₹1500 vs ₹1200)', color: 'text-red-700 dark:text-red-400 bg-red-500/10 border-red-500/20' },
+    { id: 'DEMO008', label: 'DEMO008', desc: 'Currency Mismatch (INR vs USD)', color: 'text-purple-700 dark:text-purple-400 bg-purple-500/10 border-purple-500/20' },
+    { id: 'DEMO010', label: 'DEMO010', desc: 'Duplicate Gateway', color: 'text-rose-700 dark:text-rose-400 bg-rose-500/10 border-rose-500/20' },
+  ];
+
+  // Recent 6 transactions from CSV dataset for the live feed
+  const recentFeeds = [
+    allTx.find(t => t.transaction_id === 'DEMO001'),
+    allTx.find(t => t.transaction_id === 'DEMO004'),
+    allTx.find(t => t.transaction_id === 'DEMO002'),
+    allTx.find(t => t.transaction_id === 'DEMO008'),
+    allTx.find(t => t.transaction_id === 'TXN001'),
+    allTx.find(t => t.transaction_id === 'TXN002'),
+  ].filter(Boolean);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!txInput.trim()) return;
-    setSelectedTxId(txInput.trim());
+    setSelectedTxId(txInput.trim().toUpperCase());
     setActivePage('investigation');
   };
 
-  const handleRowClick = (id: string) => {
+  const handleQuickSelect = (id: string) => {
+    setTxInput(id);
     setSelectedTxId(id);
     setActivePage('investigation');
   };
 
-  return (
-    <div className="flex flex-col w-full pb-20">
-      {/* Hero Section with Apple-style Translucent Glass Aesthetics */}
-      <section className="relative pt-8 pb-16 px-gutter max-w-7xl mx-auto w-full flex flex-col items-center text-center">
-        {/* Subtle Ambient Refraction */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[550px] h-[250px] bg-gradient-to-tr from-blue-500/10 via-sky-400/10 to-transparent dark:from-blue-600/15 dark:via-indigo-500/10 dark:to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+  const handleBrowseByDate = () => {
+    setActivePage('dashboard');
+  };
 
-        {/* Engine Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl text-on-surface-variant dark:text-slate-300 text-label-sm mb-stack-lg shadow-[0_1px_8px_rgba(0,0,0,0.03)] border border-white/80 dark:border-white/10">
-          <span className="material-symbols-outlined text-[16px] text-blue-600 dark:text-blue-400">neurology</span>
-          <span className="font-medium">Autonomous Ledger Resolution Engine v4.2</span>
+  const scrollToTelemetry = () => {
+    const el = document.getElementById('telemetry-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="flex flex-col w-full">
+      {/* ── FULL-SCREEN HERO SECTION ────────────────────────────────────────── */}
+      <section className="relative min-h-[calc(100vh-5rem)] flex flex-col justify-center items-center px-gutter max-w-7xl mx-auto w-full text-center py-12">
+        {/* Diffused institutional ambient backlight */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-b from-blue-600/10 via-indigo-500/5 to-transparent dark:from-blue-600/15 dark:via-cyan-500/5 dark:to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+
+        {/* Engine Specification Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl text-on-surface-variant dark:text-slate-300 text-label-sm mb-6 shadow-sm border border-white/80 dark:border-white/10">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span className="font-medium tracking-wide">Deterministic Truth &amp; Reconciliation Engine v4.2</span>
+          <span className="text-black/20 dark:text-white/20">|</span>
+          <span className="text-blue-600 dark:text-blue-400 font-mono">291 CSV Audited Records</span>
         </div>
 
-        {/* Headline */}
-        <h1 className="font-headline-xl text-primary dark:text-white max-w-3xl mb-stack-md tracking-tight text-[32px] sm:text-[40px] font-semibold leading-tight">
-          AI Settlement Investigation Agent
+        {/* Product Title */}
+        <h1 className="text-primary dark:text-white max-w-4xl mb-4 tracking-tight text-[36px] sm:text-[48px] md:text-[54px] font-bold leading-[1.1]">
+          Autonomous Settlement Investigation Platform
         </h1>
 
-        {/* Process Flow */}
-        <p className="font-body-lg text-on-surface-variant dark:text-slate-300 max-w-xl mb-stack-xl font-medium tracking-wide flex items-center justify-center gap-2">
-          <span>Trace</span>
-          <span className="text-blue-600 dark:text-blue-400 font-semibold">→</span>
-          <span>Reconcile</span>
-          <span className="text-blue-600 dark:text-blue-400 font-semibold">→</span>
-          <span>Explain</span>
+        {/* Value Proposition */}
+        <p className="font-body-lg text-on-surface-variant dark:text-slate-300 max-w-2xl mb-8 leading-relaxed text-[16px] sm:text-[18px]">
+          Deterministic cross-rail verification between <strong className="text-primary dark:text-white font-semibold">Gateway</strong>, <strong className="text-primary dark:text-white font-semibold">Bank</strong>, and <strong className="text-primary dark:text-white font-semibold">General Ledger</strong>. AI explains verified facts with zero hallucination.
         </p>
 
-        {/* Centered Glass Search Card */}
-        <div className="w-full max-w-2xl p-6 sm:p-8 rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl shadow-[0_8px_32px_rgba(8,24,55,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/80 dark:border-white/10 relative group mb-stack-xl transition-all">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/40 via-transparent to-blue-500/5 dark:from-white/5 dark:to-blue-500/5 pointer-events-none" />
-          <form className="relative flex flex-col gap-stack-md" id="search-form" onSubmit={handleSearchSubmit}>
+        {/* Central Investigation Terminal Card */}
+        <div className="w-full max-w-2xl p-6 sm:p-8 rounded-3xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl shadow-[0_8px_32px_rgba(8,24,55,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/80 dark:border-white/10 relative transition-all">
+          <form className="flex flex-col gap-4" onSubmit={handleSearchSubmit}>
             <div className="relative flex items-center">
               <span className="material-symbols-outlined absolute left-4 text-outline dark:text-slate-400 text-[22px]">search</span>
               <input 
-                className="w-full pl-12 pr-14 py-3.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/5 dark:border-white/10 text-on-surface dark:text-white placeholder:text-outline dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:focus:ring-blue-500 font-tabular-nums text-body-lg transition-all" 
+                className="w-full pl-12 pr-14 py-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/5 dark:border-white/10 text-on-surface dark:text-white placeholder:text-outline dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:focus:ring-blue-500 font-mono text-body-lg font-medium transition-all" 
                 id="tx-input" 
-                placeholder="Enter transaction ID (e.g. tx_984192841)" 
+                placeholder="Enter Transaction ID (e.g. DEMO004, DEMO001, TXN001)" 
                 type="text" 
                 value={txInput}
                 onChange={(e) => setTxInput(e.target.value)}
               />
-              <div className="absolute right-3 hidden sm:flex items-center gap-0.5 px-2 py-1 rounded-md bg-black/[0.04] dark:bg-white/[0.08] text-outline dark:text-slate-400 text-label-sm font-tabular-nums border border-black/5 dark:border-white/5">
+              <div className="absolute right-3.5 hidden sm:flex items-center gap-1 px-2 py-1 rounded-md bg-black/[0.04] dark:bg-white/[0.08] text-outline dark:text-slate-400 text-label-sm font-mono border border-black/5 dark:border-white/5">
                 <span>⌘</span>K
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-stack-md pt-1">
+            {/* Quick Benchmark Test Chips */}
+            <div className="flex flex-col items-start gap-2 pt-1 text-left">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant dark:text-slate-400">
+                Live Test Scenarios (from CSV):
+              </span>
+              <div className="flex flex-wrap gap-1.5 w-full">
+                {benchmarkScenarios.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => handleQuickSelect(s.id)}
+                    className={`text-[12px] px-2.5 py-1 rounded-lg border font-mono font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${s.color}`}
+                  >
+                    {s.label}: {s.desc}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Terminal Actions Footer */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-black/[0.04] dark:border-white/10">
               <div className="flex items-center gap-2 text-body-sm text-on-surface-variant dark:text-slate-300">
                 <span className="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">verified_user</span>
-                <span>Multi-rail verification active (SWIFT, ACH, SEPA, RTP)</span>
+                <span>Deterministic rules engine active • Multi-ledger verified</span>
               </div>
               <button 
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-primary dark:bg-blue-600 text-on-primary font-medium text-body-md hover:bg-primary/90 dark:hover:bg-blue-500 transition-all shadow-sm flex items-center justify-center gap-2 active:scale-[0.98]" 
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-body-md transition-all shadow-sm flex items-center justify-center gap-2 active:scale-[0.98]" 
                 type="submit"
               >
-                <span>Investigate</span>
+                <span>Investigate Case</span>
                 <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
               </button>
             </div>
           </form>
         </div>
 
-        {/* Secondary Option: Browse by Date */}
-        <div className="w-full max-w-xl p-4 px-6 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-white/70 dark:border-white/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-stack-md">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 dark:bg-blue-950/70 flex items-center justify-center text-blue-600 dark:text-blue-400">
-              <span className="material-symbols-outlined text-[20px]">calendar_month</span>
+        {/* Secondary Bar: Live Date Filter */}
+        <div className="w-full max-w-xl mt-6 p-3 px-5 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-white/70 dark:border-white/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 dark:bg-blue-950/70 flex items-center justify-center text-blue-600 dark:text-blue-400">
+              <span className="material-symbols-outlined text-[18px]">calendar_month</span>
             </div>
             <div className="text-left">
-              <div className="text-body-md font-semibold text-primary dark:text-white">Browse by Date</div>
-              <div className="text-body-sm text-on-surface-variant dark:text-slate-400">Access historical settlement batches & logs</div>
+              <div className="text-body-sm font-semibold text-primary dark:text-white">Audit Trail by Batch Date</div>
+              <div className="text-[11px] text-on-surface-variant dark:text-slate-400">Dataset contains 291 ledger transactions</div>
             </div>
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <input 
-              className="px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/5 dark:border-white/10 text-on-surface dark:text-white text-body-sm font-tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:focus:ring-blue-500" 
-              type="date" 
-              value={dateInput}
-              onChange={(e) => setDateInput(e.target.value)}
-            />
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/5 dark:border-white/10 text-on-surface dark:text-white text-body-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:focus:ring-blue-500 cursor-pointer"
+            >
+              {meta.dates.map(d => (
+                <option key={d} value={d} className="dark:bg-slate-900 text-on-surface dark:text-white">
+                  {d} (Batch)
+                </option>
+              ))}
+            </select>
             <button 
               className="px-3.5 py-1.5 rounded-xl bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-on-surface dark:text-white text-body-sm font-medium transition-colors border border-black/5 dark:border-white/10 whitespace-nowrap" 
-              onClick={() => setActivePage('dashboard')}
+              onClick={handleBrowseByDate}
             >
               View Dashboard
             </button>
           </div>
         </div>
+
+        {/* Scroll Indicator to reveal Real-Time Telemetry */}
+        <div className="mt-12 flex flex-col items-center">
+          <button 
+            onClick={scrollToTelemetry}
+            className="flex items-center gap-1.5 text-label-sm font-mono text-on-surface-variant dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors cursor-pointer group"
+          >
+            <span>Scroll down for real-time telemetry</span>
+            <span className="material-symbols-outlined text-[16px] transition-transform group-hover:translate-y-0.5">expand_more</span>
+          </button>
+        </div>
       </section>
 
-      {/* Live Telemetry & System Overview Grid */}
-      <section className="max-w-7xl mx-auto px-gutter w-full mt-stack-lg">
-        <div className="flex items-center justify-between mb-stack-md">
+      {/* ── REAL-TIME TELEMETRY SECTION (REVEALED AFTER SCROLLING) ───────────── */}
+      <section id="telemetry-section" className="max-w-7xl mx-auto px-gutter w-full py-12 pt-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="font-headline-lg text-primary dark:text-white font-semibold">Real-Time Settlement Telemetry</h2>
-            <p className="text-body-sm text-on-surface-variant dark:text-slate-400">Global ledger sync status across 14 correspondent banks</p>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/70 dark:border-white/10">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-label-sm font-tabular-nums text-on-surface-variant dark:text-slate-300">LATENCY: 42MS</span>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 text-label-sm font-mono uppercase tracking-wider font-semibold border border-blue-500/20">
+                Telemetry Stream
+              </span>
+              <span className="text-body-sm text-on-surface-variant dark:text-slate-400 font-mono">
+                Source: gateway.csv, bank.csv, ledger.csv
+              </span>
+            </div>
+            <h2 className="font-headline-lg text-primary dark:text-white font-semibold text-[26px]">
+              Real-Time Settlement Telemetry
+            </h2>
+            <p className="text-body-sm text-on-surface-variant dark:text-slate-400">
+              Aggregated statistics across all 291 audited transactions in the dataset
+            </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-stack-lg">
-          {/* Metric Card 1 */}
-          <div className="p-6 rounded-2xl bg-white/60 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] flex flex-col justify-between transition-all hover:shadow-lg">
-            <div className="flex items-center justify-between mb-stack-md">
-              <span className="text-label-md text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-medium">Processed Volume (24h)</span>
+        {/* 3 Real Telemetry Metric Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Metric 1: Total Volume */}
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-label-sm text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-mono">
+                Total Ingested Volume
+              </span>
               <span className="p-2 rounded-xl bg-blue-500/10 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                 <span className="material-symbols-outlined text-[20px]">payments</span>
               </span>
             </div>
             <div>
-              <div className="font-headline-xl text-primary dark:text-white font-tabular-nums mb-1 font-semibold">$42.8B</div>
+              <div className="font-headline-xl text-primary dark:text-white font-mono mb-1 font-bold text-[32px]">
+                ₹{meta.total_volume.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
               <div className="flex items-center gap-1 text-body-sm text-emerald-600 dark:text-emerald-400 font-medium">
-                <span className="material-symbols-outlined text-[16px]">trending_up</span>
-                <span>+12.4% vs yesterday</span>
+                <span className="material-symbols-outlined text-[16px]">verified</span>
+                <span>291 Audited Transactions Verified</span>
               </div>
             </div>
-            <div className="mt-stack-md pt-4 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm text-on-surface-variant dark:text-slate-400">
-              <span>Total Transactions</span>
-              <span className="font-tabular-nums font-semibold text-primary dark:text-white">1,492,804</span>
+            <div className="mt-4 pt-4 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm text-on-surface-variant dark:text-slate-400">
+              <span>Date Batches</span>
+              <span className="font-mono font-semibold text-primary dark:text-white">Sep 01 - Sep 03, 2026</span>
             </div>
           </div>
 
-          {/* Metric Card 2 */}
-          <div className="p-6 rounded-2xl bg-white/60 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] flex flex-col justify-between transition-all hover:shadow-lg">
-            <div className="flex items-center justify-between mb-stack-md">
-              <span className="text-label-md text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-medium">Auto-Reconciliation Rate</span>
-              <span className="p-2 rounded-xl bg-sky-500/10 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400">
-                <span className="material-symbols-outlined text-[20px]">verified</span>
+          {/* Metric 2: Reconciliation Rate */}
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-label-sm text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-mono">
+                Settlement Resolution
+              </span>
+              <span className="p-2 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                <span className="material-symbols-outlined text-[20px]">check_circle</span>
               </span>
             </div>
             <div>
-              <div className="font-headline-xl text-primary dark:text-white font-tabular-nums mb-1 font-semibold">99.87%</div>
+              <div className="font-headline-xl text-primary dark:text-white font-mono mb-1 font-bold text-[32px]">
+                {((meta.status_counts['SETTLED'] / meta.total_transactions) * 100).toFixed(1)}%
+              </div>
               <div className="flex items-center gap-1 text-body-sm text-emerald-600 dark:text-emerald-400 font-medium">
-                <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                <span>0.01% anomaly flagged</span>
+                <span className="material-symbols-outlined text-[16px]">done_all</span>
+                <span>{meta.status_counts['SETTLED']} Fully Settled Match</span>
               </div>
             </div>
-            <div className="mt-stack-md pt-4 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm text-on-surface-variant dark:text-slate-400">
-              <span>Manual Review Queue</span>
-              <span className="font-tabular-nums font-semibold text-primary dark:text-white">14 items</span>
+            <div className="mt-4 pt-4 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm text-on-surface-variant dark:text-slate-400">
+              <span>In-Flight Delays</span>
+              <span className="font-mono font-semibold text-amber-600 dark:text-amber-400">{meta.status_counts['DELAYED'] + meta.status_counts['LEDGER_DELAY']} items</span>
             </div>
           </div>
 
-          {/* Metric Card 3 */}
-          <div className="p-6 rounded-2xl bg-white/60 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] flex flex-col justify-between transition-all hover:shadow-lg">
-            <div className="flex items-center justify-between mb-stack-md">
-              <span className="text-label-md text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-medium">Active AI Agents</span>
-              <span className="p-2 rounded-xl bg-indigo-500/10 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-                <span className="material-symbols-outlined text-[20px]">smart_toy</span>
+          {/* Metric 3: Anomaly & Exception Flagging */}
+          <div className="p-6 rounded-2xl bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-label-sm text-on-surface-variant dark:text-slate-400 uppercase tracking-wider font-mono">
+                Exception Detection
+              </span>
+              <span className="p-2 rounded-xl bg-red-500/10 dark:bg-red-950/60 text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-[20px]">shield_alert</span>
               </span>
             </div>
             <div>
-              <div className="font-headline-xl text-primary dark:text-white font-tabular-nums mb-1 font-semibold">32 / 32</div>
-              <div className="flex items-center gap-1 text-body-sm text-on-surface-variant dark:text-slate-400 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>All tracing nodes operational</span>
+              <div className="font-headline-xl text-red-600 dark:text-red-400 font-mono mb-1 font-bold text-[32px]">
+                {meta.status_counts['CRITICAL_EXCEPTION'] + meta.status_counts['EXCEPTION'] + meta.status_counts['DATA_INCONSISTENCY']}
+              </div>
+              <div className="flex items-center gap-1 text-body-sm text-red-600 dark:text-red-400 font-medium">
+                <span className="material-symbols-outlined text-[16px]">warning</span>
+                <span>Amount &amp; Currency Discrepancies Caught</span>
               </div>
             </div>
-            <div className="mt-stack-md pt-4 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm text-on-surface-variant dark:text-slate-400">
-              <span>Avg Trace Latency</span>
-              <span className="font-tabular-nums font-semibold text-primary dark:text-white">310ms</span>
+            <div className="mt-4 pt-4 border-t border-black/[0.04] dark:border-white/10 flex justify-between text-body-sm text-on-surface-variant dark:text-slate-400">
+              <span>Failed / Rejected Gateways</span>
+              <span className="font-mono font-semibold text-primary dark:text-white">{meta.status_counts['FAILED'] + meta.status_counts['REJECTED']} cases</span>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Recent Investigation Feeds */}
-      <section className="max-w-7xl mx-auto px-gutter w-full mt-stack-lg">
-        <div className="p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-stack-md mb-stack-lg">
+        {/* ── AUDIT TRAIL STREAM TABLE (REAL CSV DATA) ────────────────────────── */}
+        <div className="mt-10 p-6 sm:p-8 rounded-3xl bg-white/70 dark:bg-slate-900/50 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
             <div>
-              <h3 className="font-headline-lg text-primary dark:text-white font-semibold">Recent Settlement Traces</h3>
-              <p className="text-body-sm text-on-surface-variant dark:text-slate-400">Audited transaction investigations resolved by PayTrace AI</p>
+              <h3 className="font-headline-lg text-primary dark:text-white font-semibold text-[20px]">
+                Live Settlement Audit Stream
+              </h3>
+              <p className="text-body-sm text-on-surface-variant dark:text-slate-400">
+                Click any case to view deterministic reconciliation hops and Gemini AI analysis
+              </p>
             </div>
-            <div className="flex items-center gap-stack-sm">
-              <span className="px-3 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.08] text-on-surface-variant dark:text-slate-300 text-label-sm border border-black/5 dark:border-white/5">Live Stream</span>
-            </div>
+            <button
+              onClick={() => setActivePage('dashboard')}
+              className="px-4 py-2 rounded-xl bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-body-sm font-medium transition-colors border border-black/5 dark:border-white/5"
+            >
+              View Full 291 Records →
+            </button>
           </div>
 
-          {/* Table / List Representation */}
           <div className="flex flex-col gap-2.5">
-            {/* Row 1 */}
-            <div 
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] border border-black/5 dark:border-white/5 transition-all cursor-pointer gap-stack-md" 
-              onClick={() => handleRowClick('tx_984192841')}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-semibold">
-                  <span className="material-symbols-outlined text-[20px]">done_all</span>
-                </div>
-                <div>
-                  <div className="font-tabular-nums font-semibold text-primary dark:text-white text-body-lg">tx_984192841</div>
-                  <div className="text-body-sm text-on-surface-variant dark:text-slate-400">SWIFT MT103 → Fedwire clearing match confirmed</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-stack-lg w-full sm:w-auto justify-between sm:justify-end">
-                <div className="text-right">
-                  <div className="font-tabular-nums font-semibold text-primary dark:text-white">$1,250,000.00</div>
-                  <div className="text-body-sm text-on-surface-variant dark:text-slate-400">2 mins ago</div>
-                </div>
-                <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 text-label-sm font-semibold border border-emerald-500/20">Resolved</span>
-              </div>
-            </div>
+            {recentFeeds.map((tx) => {
+              if (!tx) return null;
+              const isSettled = tx.overall_status === 'SETTLED';
+              const isDelayed = tx.overall_status === 'DELAYED' || tx.overall_status === 'LEDGER_DELAY';
+              const isException = tx.overall_status === 'CRITICAL_EXCEPTION' || tx.overall_status === 'EXCEPTION' || tx.overall_status === 'DATA_INCONSISTENCY';
 
-            {/* Row 2 */}
-            <div 
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] border border-black/5 dark:border-white/5 transition-all cursor-pointer gap-stack-md" 
-              onClick={() => handleRowClick('tx_884102934')}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 flex items-center justify-center font-semibold">
-                  <span className="material-symbols-outlined text-[20px]">pending</span>
+              return (
+                <div 
+                  key={tx.transaction_id}
+                  onClick={() => handleQuickSelect(tx.transaction_id)}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.05] dark:hover:bg-white/[0.06] border border-black/5 dark:border-white/5 transition-all cursor-pointer gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-semibold shrink-0 ${
+                      isSettled ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' :
+                      isDelayed ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400' :
+                      isException ? 'bg-red-500/10 text-red-700 dark:text-red-400' :
+                      'bg-slate-500/10 text-slate-700 dark:text-slate-400'
+                    }`}>
+                      <span className="material-symbols-outlined text-[20px]">
+                        {isSettled ? 'done_all' : isDelayed ? 'schedule' : isException ? 'error' : 'receipt_long'}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="font-mono font-semibold text-primary dark:text-white text-body-lg flex items-center gap-2">
+                        <span>{tx.transaction_id}</span>
+                        {tx.delay_point && (
+                          <span className="text-[11px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 font-mono">
+                            Delay: {tx.delay_point}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-body-sm text-on-surface-variant dark:text-slate-400 truncate max-w-lg">
+                        {tx.evidence[0] || 'Reconciled ledger telemetry stream'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="text-right">
+                      <div className="font-mono font-semibold text-primary dark:text-white">
+                        {tx.currency === 'USD' ? '$' : '₹'}{tx.amount?.toLocaleString() || '0.00'}
+                      </div>
+                      <div className="text-[12px] text-on-surface-variant dark:text-slate-400 font-mono">
+                        {tx.gateway.timestamp || '2026-09-01'}
+                      </div>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-full text-label-sm font-semibold border font-mono ${
+                      isSettled ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20' :
+                      isDelayed ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20' :
+                      isException ? 'bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20' :
+                      'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20'
+                    }`}>
+                      {tx.overall_status}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-tabular-nums font-semibold text-primary dark:text-white text-body-lg">tx_884102934</div>
-                  <div className="text-body-sm text-on-surface-variant dark:text-slate-400">SEPA Instant cross-border currency divergence check</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-stack-lg w-full sm:w-auto justify-between sm:justify-end">
-                <div className="text-right">
-                  <div className="font-tabular-nums font-semibold text-primary dark:text-white">€480,200.50</div>
-                  <div className="text-body-sm text-on-surface-variant dark:text-slate-400">14 mins ago</div>
-                </div>
-                <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 text-label-sm font-semibold border border-amber-500/20">Reviewing</span>
-              </div>
-            </div>
-
-            {/* Row 3 */}
-            <div 
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] border border-black/5 dark:border-white/5 transition-all cursor-pointer gap-stack-md" 
-              onClick={() => handleRowClick('tx_772109843')}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-semibold">
-                  <span className="material-symbols-outlined text-[20px]">done_all</span>
-                </div>
-                <div>
-                  <div className="font-tabular-nums font-semibold text-primary dark:text-white text-body-lg">tx_772109843</div>
-                  <div className="text-body-sm text-on-surface-variant dark:text-slate-400">ACH Batch settlement auto-reconciled with JPMorgan ledger</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-stack-lg w-full sm:w-auto justify-between sm:justify-end">
-                <div className="text-right">
-                  <div className="font-tabular-nums font-semibold text-primary dark:text-white">$89,450.00</div>
-                  <div className="text-body-sm text-on-surface-variant dark:text-slate-400">28 mins ago</div>
-                </div>
-                <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 text-label-sm font-semibold border border-emerald-500/20">Resolved</span>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
       </section>
