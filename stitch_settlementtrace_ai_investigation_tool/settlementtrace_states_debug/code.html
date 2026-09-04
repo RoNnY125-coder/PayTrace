@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {"darkMode":"class","theme":{"extend":{"colors":{"secondary-container":"#b9d3fd","tertiary-fixed-dim":"#7bd0ff","primary":"#081837","primary-container":"#1f2d4d","on-tertiary-fixed-variant":"#004c69","surface-container":"#eceef1","error":"#ba1a1a","on-surface":"#191c1e","secondary":"#466083","surface-container-high":"#e6e8eb","surface-container-highest":"#e0e3e6","primary-fixed":"#d9e2ff","on-secondary":"#ffffff","surface-container-lowest":"#ffffff","tertiary-fixed":"#c4e7ff","error-container":"#ffdad6","on-error-container":"#93000a","primary-fixed-dim":"#b8c6ee","on-primary":"#ffffff","surface-bright":"#f7f9fc","surface":"#f7f9fc","on-background":"#191c1e","on-secondary-fixed":"#001c39","outline-variant":"#c5c6cf","on-tertiary-fixed":"#001e2c","surface-variant":"#e0e3e6","on-surface-variant":"#45464e","on-secondary-container":"#415b7f","inverse-primary":"#b8c6ee","on-secondary-fixed-variant":"#2d486a","background":"#f7f9fc","on-error":"#ffffff","inverse-on-surface":"#eff1f4","tertiary-container":"#003246","surface-dim":"#d8dadd","on-primary-container":"#8795bb","secondary-fixed-dim":"#aec8f1","surface-container-low":"#f2f4f7","on-tertiary-container":"#00a0d8","on-primary-fixed":"#0b1a3a","surface-tint":"#505e81","inverse-surface":"#2d3133","secondary-fixed":"#d3e3ff","on-tertiary":"#ffffff","outline":"#75777f","on-primary-fixed-variant":"#384668","tertiary":"#001c29"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"stack-sm":"8px","stack-lg":"24px","stack-xs":"4px","gutter":"24px","panel-padding":"24px","margin-screen":"32px","stack-md":"16px","stack-xl":"32px"},"fontFamily":{"body-sm":["Inter"],"body-lg":["Inter"],"headline-lg":["Inter"],"headline-xl":["Inter"],"label-md":["JetBrains Mono"],"label-sm":["JetBrains Mono"],"body-md":["Inter"],"headline-md":["Inter"],"tabular-nums":["JetBrains Mono"]},"fontSize":{"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"body-lg":["15px",{"lineHeight":"22px","fontWeight":"400"}],"headline-lg":["22px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-xl":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"500"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.02em","fontWeight":"500"}],"body-md":["13px",{"lineHeight":"18px","fontWeight":"400"}],"headline-md":["18px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"500"}],"tabular-nums":["13px",{"lineHeight":"18px","letterSpacing":"0px","fontWeight":"400"}]}}}};</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface min-h-screen bg-[radial-gradient(#c5c6cf_1px,transparent_1px)] [background-size:16px_16px]"><header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between"><div class="flex items-center gap-stack-lg"><span class="font-headline-lg text-primary tracking-tight">SettlementTrace</span><nav class="hidden md:flex items-center gap-stack-md" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg px-3 py-1.5"><a class="text-body-md text-on-surface-variant hover:text-on-surface px-3 py-1.5 transition-colors" data-path="home" href="#">Home</a><a class="text-body-md text-on-surface-variant hover:text-on-surface px-3 py-1.5 transition-colors" data-path="dashboard" href="#">Dashboard</a><a class="text-body-md text-on-surface-variant hover:text-on-surface px-3 py-1.5 transition-colors" data-path="investigation" href="#">Investigation</a><a class="text-body-md text-on-surface-variant hover:text-on-surface px-3 py-1.5 transition-colors" data-path="states-debug" href="#">States/Debug</a></nav></div><div class="flex items-center gap-stack-md"><div class="hidden sm:flex items-center gap-stack-xs px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-label-sm"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>System Online</div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 min-h-[calc(100vh-4rem)]"><div class="flex flex-col w-full max-w-7xl mx-auto px-gutter py-margin-screen">
+<!-- Top Section / Header description -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md mb-stack-xl">
+<div>
+<div class="flex items-center gap-stack-sm mb-stack-xs">
+<span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary-container text-label-sm uppercase tracking-wider">System Diagnostic</span>
+<span class="text-body-sm text-on-surface-variant font-tabular-nums">ID: TRACE-STATE-DEBUG-904</span>
+</div>
+<h1 class="text-headline-xl text-primary font-headline-xl tracking-tight">Operational States &amp; Error Handling</h1>
+<p class="text-body-lg text-on-surface-variant mt-stack-xs max-w-2xl">
+        Comprehensive debugging suite showcasing graceful degradation, fallback telemetry, error recovery flows, and live asynchronous loading states within the SettlementTrace glassmorphism architecture.
+      </p>
+</div>
+<div class="flex items-center gap-stack-sm">
+<button class="px-4 py-2 rounded-lg bg-primary text-on-primary text-body-md font-medium shadow-sm transition-all hover:opacity-90" id="btn-all" onclick="switchTab('all')">Grid View</button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-body-md font-medium transition-all hover:bg-surface-container-highest" id="btn-loading" onclick="switchTab('loading')">1. Loading</button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-body-md font-medium transition-all hover:bg-surface-container-highest" id="btn-notfound" onclick="switchTab('error-notfound')">2. Not Found</button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-body-md font-medium transition-all hover:bg-surface-container-highest" id="btn-backend" onclick="switchTab('error-backend')">3. Backend Down</button>
+<button class="px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-body-md font-medium transition-all hover:bg-surface-container-highest" id="btn-partial" onclick="switchTab('partial')">4. Partial AI</button>
+</div>
+</div>
+<!-- Main Container Grid / Tab Container -->
+<div class="grid grid-cols-1 gap-stack-xl" id="states-container">
+<!-- STATE 1: LOADING STATE -->
+<div class="state-card flex flex-col bg-white/60 backdrop-blur-xl p-panel-padding rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.02)] [border:1px_solid_rgba(255,255,255,0.8)] relative overflow-hidden" data-state-id="loading">
+<!-- State Badge & Header -->
+<div class="flex items-center justify-between pb-stack-md mb-stack-md border-b border-surface-container">
+<div class="flex items-center gap-stack-sm">
+<span class="w-3 h-3 rounded-full bg-secondary animate-ping"></span>
+<h2 class="text-headline-md text-primary font-headline-md">1. Loading State (Async Telemetry Ingestion)</h2>
+</div>
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm font-tabular-nums">STATUS: FETCHING_STREAM</span>
+</div>
+<!-- Content Grid mimicking the main trace layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-stack-lg">
+<!-- Skeleton Left: Settlement Status & Trace -->
+<div class="lg:col-span-2 flex flex-col gap-stack-md">
+<!-- Glass Panel Mock -->
+<div class="p-6 rounded-xl bg-surface-container-lowest/50 flex flex-col gap-stack-md animate-pulse">
+<div class="flex justify-between items-center">
+<div class="w-32 h-5 bg-surface-container-high rounded"></div>
+<div class="w-20 h-6 bg-surface-container-high rounded-full"></div>
+</div>
+<div class="grid grid-cols-3 gap-4 my-2">
+<div class="h-16 bg-surface-container-high rounded-lg"></div>
+<div class="h-16 bg-surface-container-high rounded-lg"></div>
+<div class="h-16 bg-surface-container-high rounded-lg"></div>
+</div>
+<div class="w-full h-24 bg-surface-container-high rounded-lg"></div>
+</div>
+<!-- Trace Timeline Skeleton -->
+<div class="p-6 rounded-xl bg-surface-container-lowest/50 flex flex-col gap-stack-md animate-pulse">
+<div class="w-40 h-5 bg-surface-container-high rounded"></div>
+<div class="flex items-center justify-between gap-4 py-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high"></div>
+<div class="flex-1 h-1 bg-surface-container-high"></div>
+<div class="w-12 h-12 rounded-full bg-surface-container-high"></div>
+<div class="flex-1 h-1 bg-surface-container-high"></div>
+<div class="w-12 h-12 rounded-full bg-surface-container-high"></div>
+</div>
+</div>
+</div>
+<!-- Skeleton Right: AI Analysis Section -->
+<div class="flex flex-col gap-stack-md">
+<div class="p-6 rounded-xl bg-primary-container/10 border border-primary-container/20 flex flex-col items-center justify-center text-center h-full min-h-[300px] relative overflow-hidden">
+<!-- Shimmer effect overlay -->
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_2s_infinite]"></div>
+<span class="material-symbols-outlined text-[40px] text-primary animate-spin mb-stack-md">sync</span>
+<p class="text-headline-md text-primary font-headline-md">Analyzing verified evidence...</p>
+<p class="text-body-sm text-on-surface-variant mt-stack-xs max-w-[240px]">
+              Cross-referencing SWIFT messaging logs with real-time ledger settlement states.
+            </p>
+<div class="w-36 h-2 bg-surface-container-high rounded-full mt-stack-lg overflow-hidden">
+<div class="bg-primary h-full w-2/3 rounded-full animate-[pulse_1.5s_infinite]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- STATE 2: ERROR STATE — INVALID TRANSACTION -->
+<div class="state-card flex flex-col bg-white/60 backdrop-blur-xl p-panel-padding rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.02)] [border:1px_solid_rgba(255,255,255,0.8)] relative overflow-hidden" data-state-id="error-notfound">
+<!-- State Badge & Header -->
+<div class="flex items-center justify-between pb-stack-md mb-stack-md border-b border-surface-container">
+<div class="flex items-center gap-stack-sm">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<h2 class="text-headline-md text-primary font-headline-md">2. Error State — Invalid Transaction (404 Not Found)</h2>
+</div>
+<span class="px-3 py-1 rounded-full bg-error-container text-on-error-container text-label-sm font-tabular-nums">CODE: ERR_TX_NOT_FOUND</span>
+</div>
+<!-- Centered Error Card Inside Glass Canvas -->
+<div class="py-12 px-6 flex flex-col items-center justify-center text-center max-w-lg mx-auto w-full">
+<div class="w-16 h-16 rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant mb-stack-md shadow-inner">
+<span class="material-symbols-outlined text-[32px]">search_off</span>
+</div>
+<h3 class="text-headline-lg text-on-surface font-headline-lg mb-stack-xs">Transaction not found</h3>
+<p class="text-body-lg text-on-surface-variant mb-stack-lg">
+          The requested settlement hash <code class="px-2 py-0.5 rounded bg-surface-container font-tabular-nums text-primary text-body-md">0x8f9c...42a1</code> does not exist in the active ledger ring or has expired from cache.
+        </p>
+<!-- Search Input & Retry Action -->
+<div class="flex flex-col sm:flex-row gap-stack-sm w-full max-w-md">
+<div class="flex-1 relative flex items-center">
+<span class="absolute left-3 material-symbols-outlined text-on-surface-variant text-[18px]">key</span>
+<input class="w-full bg-surface-container-low text-on-surface text-body-md pl-10 pr-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Enter valid settlement hash..." type="text"/>
+</div>
+<button class="px-5 py-2.5 rounded-lg bg-primary text-on-primary text-body-md font-medium hover:bg-primary-container transition-colors flex items-center justify-center gap-stack-xs">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+            Search Again
+          </button>
+</div>
+<div class="mt-stack-lg flex items-center gap-stack-md text-body-sm text-on-surface-variant">
+<a class="hover:text-primary underline" href="#">View recent audit logs</a>
+<span>•</span>
+<a class="hover:text-primary underline" href="#">Contact clearing house support</a>
+</div>
+</div>
+</div>
+<!-- STATE 3: ERROR STATE — BACKEND UNAVAILABLE -->
+<div class="state-card flex flex-col bg-white/60 backdrop-blur-xl p-panel-padding rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.02)] [border:1px_solid_rgba(255,255,255,0.8)] relative overflow-hidden" data-state-id="error-backend">
+<!-- State Badge & Header -->
+<div class="flex items-center justify-between pb-stack-md mb-stack-md border-b border-surface-container">
+<div class="flex items-center gap-stack-sm">
+<span class="w-3 h-3 rounded-full bg-amber-500"></span>
+<h2 class="text-headline-md text-primary font-headline-md">3. Error State — Backend Unavailable (Calm &amp; Reassuring Tone)</h2>
+</div>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface text-label-sm font-tabular-nums">STATUS: OFFLINE_CACHED_MODE</span>
+</div>
+<!-- Reassuring Notice Box -->
+<div class="p-8 rounded-xl bg-surface-container-low/80 flex flex-col md:flex-row items-center gap-stack-xl">
+<div class="w-20 h-20 rounded-2xl bg-secondary-container/40 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[40px]">cloud_off</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<div class="inline-block px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm mb-stack-xs font-semibold">Scheduled Maintenance / Temporary Outage</div>
+<h3 class="text-headline-lg text-primary font-headline-lg">Primary ledger telemetry temporarily unreachable</h3>
+<p class="text-body-lg text-on-surface-variant mt-stack-xs">
+            We are unable to reach the core settlement gateway at this moment. Don't worry—your local session cache is secure, and transactions processed prior to 14:00 UTC have been safely snapshotted. Automatic reconnection attempts are underway.
+          </p>
+</div>
+<div class="flex flex-col gap-stack-sm shrink-0 w-full md:w-auto">
+<button class="px-5 py-2.5 rounded-lg bg-primary text-on-primary text-body-md font-medium hover:bg-primary-container transition-all flex items-center justify-center gap-stack-xs shadow-sm">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+            Retry Connection Now
+          </button>
+<button class="px-5 py-2.5 rounded-lg bg-surface-container text-on-surface text-body-md font-medium hover:bg-surface-container-high transition-all flex items-center justify-center gap-stack-xs">
+<span class="material-symbols-outlined text-[18px]">history</span>
+            Load Local Snapshot
+          </button>
+</div>
+</div>
+<!-- Subtle background diagnostic feed showing graceful fallback -->
+<div class="mt-stack-lg grid grid-cols-1 md:grid-cols-3 gap-stack-md">
+<div class="p-4 rounded-lg bg-surface-container-lowest flex items-center gap-stack-md">
+<span class="material-symbols-outlined text-secondary text-[24px]">database</span>
+<div>
+<p class="text-body-sm text-on-surface-variant">Local SQLite Cache</p>
+<p class="text-body-md font-semibold text-primary">1,428 Records Available</p>
+</div>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-lowest flex items-center gap-stack-md">
+<span class="material-symbols-outlined text-secondary text-[24px]">lock_clock</span>
+<div>
+<p class="text-body-sm text-on-surface-variant">Last Successful Sync</p>
+<p class="text-body-md font-semibold text-primary font-tabular-nums">Today, 13:58:12 UTC</p>
+</div>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-lowest flex items-center gap-stack-md">
+<span class="material-symbols-outlined text-amber-600 text-[24px]">signal_wifi_off</span>
+<div>
+<p class="text-body-sm text-on-surface-variant">Next Ping Attempt</p>
+<p class="text-body-md font-semibold text-primary font-tabular-nums">In 14 seconds...</p>
+</div>
+</div>
+</div>
+</div>
+<!-- STATE 4: PARTIAL FAILURE STATE — AI UNAVAILABLE, DATA AVAILABLE -->
+<div class="state-card flex flex-col bg-white/60 backdrop-blur-xl p-panel-padding rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.02)] [border:1px_solid_rgba(255,255,255,0.8)] relative overflow-hidden" data-state-id="partial">
+<!-- State Badge & Header -->
+<div class="flex items-center justify-between pb-stack-md mb-stack-md border-b border-surface-container">
+<div class="flex items-center gap-stack-sm">
+<span class="w-3 h-3 rounded-full bg-emerald-600"></span>
+<h2 class="text-headline-md text-primary font-headline-md">4. Partial Failure State — AI Unavailable, Ledger Data Fully Functional</h2>
+</div>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-on-surface text-label-sm font-tabular-nums">STATUS: AI_SERVICE_DEGRADED_DATA_OK</span>
+</div>
+<!-- Main Grid with Working UI Parts + Graceful Fallback AI Panel -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-stack-lg">
+<!-- Left 2 Columns: Fully Operational Telemetry -->
+<div class="lg:col-span-2 flex flex-col gap-stack-lg">
+<!-- Settlement Status Bar -->
+<div class="p-6 rounded-xl bg-surface-container-lowest flex flex-col sm:flex-row justify-between items-start sm:items-center gap-stack-md">
+<div>
+<div class="flex items-center gap-stack-xs text-label-sm text-on-surface-variant">
+<span>SETTLEMENT HASH</span>
+<span>•</span>
+<span class="font-tabular-nums">TX-9082-ALPHA</span>
+</div>
+<h3 class="text-headline-lg text-primary font-headline-lg mt-1">$1,450,000.00 USD Settled</h3>
+</div>
+<div class="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-label-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Confirmed &amp; Cleared
+            </div>
+</div>
+<!-- System Trace Row & Timeline -->
+<div class="p-6 rounded-xl bg-surface-container-lowest flex flex-col gap-stack-md">
+<h4 class="text-headline-md text-primary font-headline-md">Transaction Hop Telemetry</h4>
+<div class="grid grid-cols-3 gap-4 text-center">
+<div class="p-4 rounded-lg bg-surface-container-low">
+<p class="text-body-sm text-on-surface-variant">Origin Gateway</p>
+<p class="text-body-md font-semibold text-primary mt-1">Stripe Connect EU</p>
+<span class="text-label-sm text-emerald-600 font-tabular-nums">200 OK</span>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-low">
+<p class="text-body-sm text-on-surface-variant">Clearing House</p>
+<p class="text-body-md font-semibold text-primary mt-1">SWIFT GPI Network</p>
+<span class="text-label-sm text-emerald-600 font-tabular-nums">VERIFIED</span>
+</div>
+<div class="p-4 rounded-lg bg-surface-container-low">
+<p class="text-body-sm text-on-surface-variant">Beneficiary Bank</p>
+<p class="text-body-md font-semibold text-primary mt-1">JPMorgan Chase</p>
+<span class="text-label-sm text-emerald-600 font-tabular-nums">CREDITED</span>
+</div>
+</div>
+</div>
+<!-- Evidence Panel -->
+<div class="p-6 rounded-xl bg-surface-container-lowest flex flex-col gap-stack-sm">
+<div class="flex justify-between items-center">
+<h4 class="text-headline-md text-primary font-headline-md">Verified Cryptographic Evidence</h4>
+<span class="text-label-sm text-on-surface-variant font-tabular-nums">SHA-256 Validated</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low font-tabular-nums text-body-sm text-on-surface flex justify-between items-center">
+<span>proof_merkle_root_091823.sig</span>
+<span class="text-emerald-600">VALID SIGNATURE</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Graceful AI Degradation Panel -->
+<div class="flex flex-col">
+<div class="p-6 rounded-xl bg-surface-container-high/60 border border-outline-variant/30 flex flex-col items-center justify-center text-center h-full min-h-[320px]">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-stack-md">
+<span class="material-symbols-outlined text-[24px]">smart_toy</span>
+</div>
+<h4 class="text-headline-md text-on-surface font-headline-md mb-stack-xs">AI Investigation Offline</h4>
+<p class="text-body-md text-on-surface-variant mb-stack-lg max-w-xs">
+              AI explanation unavailable — verified evidence is still available below.
+            </p>
+<div class="p-3 rounded-lg bg-surface-container-lowest/80 text-body-sm text-on-surface-variant w-full text-left flex items-start gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">info</span>
+<span>Manual inspection tools remain fully operational. LLM inference cluster is performing routine weight updates.</span>
+</div>
+<button class="mt-stack-md px-4 py-2 rounded-lg bg-surface-container text-on-surface text-body-md font-medium hover:bg-surface-container-highest transition-colors w-full">
+              Check AI Cluster Status
+            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function switchTab(stateKey) {
+    const cards = document.querySelectorAll('.state-card');
+    const buttons = {
+      'all': document.getElementById('btn-all'),
+      'loading': document.getElementById('btn-loading'),
+      'error-notfound': document.getElementById('btn-notfound'),
+      'error-backend': document.getElementById('btn-backend'),
+      'partial': document.getElementById('btn-partial')
+    };
+
+    // Reset button styles
+    Object.keys(buttons).forEach(key => {
+      if (buttons[key]) {
+        buttons[key].className = "px-4 py-2 rounded-lg bg-surface-container-high text-on-surface text-body-md font-medium transition-all hover:bg-surface-container-highest";
+      }
+    });
+
+    // Highlight active button
+    if (buttons[stateKey]) {
+      buttons[stateKey].className = "px-4 py-2 rounded-lg bg-primary text-on-primary text-body-md font-medium shadow-sm transition-all hover:opacity-90";
+    }
+
+    // Show/Hide cards based on stateKey
+    cards.forEach(card => {
+      if (stateKey === 'all') {
+        card.style.display = 'flex';
+      } else {
+        const id = card.getAttribute('data-state-id');
+        if (id === stateKey) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      }
+    });
+  }
+</script></main></body></html>
