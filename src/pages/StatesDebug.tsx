@@ -98,36 +98,36 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
   ];
 
   return (
-    <div className="flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-28">
-      {/* ── HEADER & TELEMETRY BAR ─────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+    <div className="flex flex-col w-full max-w-7xl mx-auto px-6 sm:px-8 py-8 gap-10 pb-28">
+      {/* ── HEADER & TELEMETRY BAR (CONFIDENT WHITESPACE) ─────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full bg-[#EBF8E3] text-[#163300] dark:bg-[#1A2B1A] dark:text-[#9FE870] text-xs font-mono uppercase tracking-wider font-bold border border-[#9FE870] dark:border-[#9FE870]/30">
-              System Diagnostic Suite
+            <span className="px-3 py-1 rounded-full bg-[#9FE870]/10 text-[#2D5A0F] dark:text-[#9FE870] text-xs uppercase tracking-wider font-semibold border border-[#9FE870]/20">
+              Diagnostic &amp; Quality Assurance
             </span>
-            <span className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
+            <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
               PayTrace Engine v4.2
             </span>
           </div>
-          <h1 className="text-[#163300] dark:text-white font-extrabold text-[28px] sm:text-[32px] tracking-tight">
+          <h1 className="text-[#14151A] dark:text-[#EDEDF0] font-bold text-[30px] sm:text-[36px] tracking-tight">
             Operational States &amp; Benchmark Scenarios
           </h1>
-          <p className="text-sm text-[#596859] dark:text-[#9DA99D] mt-1.5 max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base text-[#6C6D77] dark:text-[#9B9CA6] mt-2 max-w-2xl leading-relaxed">
             Live diagnostic console verifying graceful degradation, offline CSV cache fallbacks, exception handling, and all 11 benchmark test cases.
           </p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex flex-wrap items-center gap-1 bg-[#E8EAEF] dark:bg-[#1A241A] p-1 rounded-full border border-[#DFE2E6] dark:border-[#243324]">
+        {/* Tab Switcher as Flat Pill Group */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-[#E8EAEF] dark:bg-[#26272E] p-1.5 rounded-full border border-[#DFE2E6] dark:border-[#2E2F38] self-start md:self-auto">
           {(['all', 'benchmarks', 'loading', 'error-notfound', 'error-backend', 'partial'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                 activeTab === tab
-                  ? 'bg-[#163300] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#163300] shadow-sm scale-[1.02]'
-                  : 'text-[#596859] dark:text-[#9DA99D] hover:text-[#163300] dark:hover:text-white hover:bg-black/[0.03] dark:hover:bg-white/[0.04]'
+                  ? 'bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A]'
+                  : 'text-[#6C6D77] dark:text-[#9B9CA6] hover:text-[#14151A] dark:hover:text-[#EDEDF0]'
               }`}
             >
               {tab === 'all' ? 'All Views' :
@@ -140,104 +140,114 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
         </div>
       </div>
 
-      {/* ── LIVE SYSTEM TELEMETRY BADGES ────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="p-4 rounded-3xl bg-white dark:bg-[#131A13] border border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${backendHealth === 'online' ? 'bg-[#9FE870] animate-pulse' : 'bg-amber-500'}`} />
+      {/* ── LIVE SYSTEM TELEMETRY CARDS (28-32px padding, clean surfaces) ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38] flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className={`w-3.5 h-3.5 rounded-full ${backendHealth === 'online' ? 'bg-[#9FE870]' : 'bg-[#F0B84B]'}`} />
             <div>
-              <div className="text-[11px] font-mono uppercase text-[#596859] dark:text-[#9DA99D] font-bold">FastAPI Backend</div>
-              <div className="text-sm font-bold text-[#163300] dark:text-white">
-                {backendHealth === 'online' ? 'Connected (Port 8000)' : 'CSV Cache Mode'}
+              <div className="text-[11px] uppercase tracking-wider text-[#6C6D77] dark:text-[#9B9CA6] font-medium">FastAPI Backend</div>
+              <div className="text-base font-bold text-[#14151A] dark:text-[#EDEDF0] mt-0.5">
+                {backendHealth === 'online' ? 'Connected (:8000)' : 'CSV Cache Mode'}
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-[#F4F5F7] dark:bg-[#1A261A] text-[#596859] dark:text-[#9DA99D] border border-[#E2E5E9] dark:border-[#273827] font-bold">
+          <span className="text-xs px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#14151A] text-[#6C6D77] dark:text-[#9B9CA6] border border-[#E2E5E9] dark:border-[#2E2F38] font-mono font-medium">
             HTTP 200
           </span>
         </div>
 
-        <div className="p-4 rounded-3xl bg-white dark:bg-[#131A13] border border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-[#9FE870] animate-pulse" />
+        <div className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38] flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="w-3.5 h-3.5 rounded-full bg-[#9FE870]" />
             <div>
-              <div className="text-[11px] font-mono uppercase text-[#596859] dark:text-[#9DA99D] font-bold">AI Investigation Engine</div>
-              <div className="text-sm font-bold text-[#163300] dark:text-white">
+              <div className="text-[11px] uppercase tracking-wider text-[#6C6D77] dark:text-[#9B9CA6] font-medium">Investigation AI</div>
+              <div className="text-base font-bold text-[#14151A] dark:text-[#EDEDF0] mt-0.5">
                 Gemini 3.6 Flash Active
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] text-[#163300] dark:text-[#9FE870] font-bold border border-[#9FE870] dark:border-[#9FE870]/30">
-            Zero-Hallucination
+          <span className="text-xs px-3 py-1 rounded-full bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] font-semibold border border-[#9FE870]/20">
+            Zero Hallucination
           </span>
         </div>
 
-        <div className="p-4 rounded-3xl bg-white dark:bg-[#131A13] border border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-[#9FE870]" />
+        <div className="p-7 sm:p-8 rounded-3xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38] flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="w-3.5 h-3.5 rounded-full bg-[#9FE870]" />
             <div>
-              <div className="text-[11px] font-mono uppercase text-[#596859] dark:text-[#9DA99D] font-bold">Audited Telemetry</div>
-              <div className="text-sm font-bold text-[#163300] dark:text-white">
-                {datasetMeta?.total_transactions || 291} Reconciled Records
+              <div className="text-[11px] uppercase tracking-wider text-[#6C6D77] dark:text-[#9B9CA6] font-medium">Reconciled Telemetry</div>
+              <div className="text-base font-bold text-[#14151A] dark:text-[#EDEDF0] mt-0.5">
+                {datasetMeta?.total_transactions || 291} Audit Records
               </div>
             </div>
           </div>
-          <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] text-[#163300] dark:text-[#9FE870] font-bold border border-[#9FE870] dark:border-[#9FE870]/30">
+          <span className="text-xs px-3 py-1 rounded-full bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] font-semibold border border-[#9FE870]/20">
             3 CSVs Live
           </span>
         </div>
       </div>
 
-      {/* ── BENCHMARK SUITE FROM CSV ────────────────────────────────────────── */}
+      {/* ── BENCHMARK SUITE FROM CSV (SPACIOUS 3-COL GRID) ─────────────────── */}
       {(activeTab === 'all' || activeTab === 'benchmarks') && (
-        <div className="mb-10 bg-white dark:bg-[#131A13] p-6 sm:p-7 rounded-3xl shadow-sm border border-[#E2E5E9] dark:border-[#273827]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-[#E2E5E9] dark:border-[#273827] gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#9FE870]" />
-              <h2 className="text-[#163300] dark:text-white font-extrabold text-[18px] sm:text-[20px] tracking-tight">
-                Deterministic Benchmark Test Cases (11 Fixed Demo Scenarios)
-              </h2>
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-10 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-[#E8EAEF] dark:border-[#2E2F38] gap-4">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#9FE870]" />
+                <h2 className="text-[#14151A] dark:text-[#EDEDF0] font-bold text-xl sm:text-2xl tracking-tight">
+                  Deterministic Benchmark Scenarios (11 Cases)
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-[#6C6D77] dark:text-[#9B9CA6]">
+                Fixed deterministic ground truth cases covering clean, delayed, and anomalous settlement topologies.
+              </p>
             </div>
-            <span className="px-3.5 py-1 rounded-full bg-[#EBF8E3] text-[#163300] dark:bg-[#1A2B1A] dark:text-[#9FE870] text-xs font-mono font-bold border border-[#9FE870] dark:border-[#9FE870]/30 w-fit">
-              CLICK ANY CARD TO INVESTIGATE
+            <span className="px-3.5 py-1.5 rounded-full bg-[#F4F5F7] dark:bg-[#14151A] text-[#6C6D77] dark:text-[#9B9CA6] text-xs font-semibold border border-[#E2E5E9] dark:border-[#2E2F38] w-fit">
+              Select card to investigate case
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {benchmarkCases.map((b) => {
               const tx = getLocalTransaction(b.id);
+              const isSettled = b.expected === 'SETTLED';
+              const isDelayed = b.expected === 'DELAYED' || b.expected === 'LEDGER_DELAY';
+
               return (
                 <div 
                   key={b.id}
                   onClick={() => handleInspect(b.id)}
-                  className="p-4 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] hover:bg-white dark:hover:bg-[#202E20] border border-[#E2E5E9] dark:border-[#273827] hover:border-[#9FE870] dark:hover:border-[#9FE870]/50 flex flex-col justify-between gap-3 transition-all cursor-pointer group hover:scale-[1.01] hover:shadow-md"
+                  className="p-6 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] hover:bg-white dark:hover:bg-[#26272E] border border-[#E2E5E9] dark:border-[#2E2F38] hover:border-[#9FE870]/50 flex flex-col justify-between gap-4 transition-all cursor-pointer group"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-extrabold text-[#163300] dark:text-white text-sm group-hover:text-[#2D5A0F] dark:group-hover:text-[#9FE870] transition-colors">
+                        <span className="font-mono font-bold text-[#14151A] dark:text-[#EDEDF0] text-sm group-hover:text-[#2D5A0F] dark:group-hover:text-[#9FE870] transition-colors">
                           {b.id}
                         </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white dark:bg-[#131A13] text-[#596859] dark:text-[#9DA99D] border border-[#E2E5E9] dark:border-[#273827] font-semibold">
+                        <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-white dark:bg-[#1E1F26] text-[#6C6D77] dark:text-[#9B9CA6] border border-[#E2E5E9] dark:border-[#2E2F38] font-medium">
                           {b.tag}
                         </span>
                       </div>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${
-                        b.expected === 'SETTLED' ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
-                        b.expected === 'DELAYED' || b.expected === 'LEDGER_DELAY' ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
-                        'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                        isSettled ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20' :
+                        isDelayed ? 'bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/20' :
+                        'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/20'
                       }`}>
-                        {b.expected}
+                        {isSettled ? 'Settled' : b.expected}
                       </span>
                     </div>
-                    <p className="text-xs text-[#596859] dark:text-[#9DA99D] line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] line-clamp-2 leading-relaxed">
                       {b.note}
                     </p>
                   </div>
-                  <div className="pt-2.5 border-t border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
-                    <span>Amt: ₹{tx?.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}</span>
-                    <span className="text-[#163300] dark:text-[#9FE870] font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                      Investigate Case →
+                  <div className="pt-3 border-t border-[#E8EAEF] dark:border-[#2E2F38] flex items-center justify-between text-xs">
+                    <span className="text-[#6C6D77] dark:text-[#9B9CA6] tabular-nums font-mono">
+                      {tx?.currency === 'USD' ? '$' : '₹'}{tx?.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                    </span>
+                    <span className="text-[#14151A] dark:text-[#9FE870] font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      Inspect Case →
                     </span>
                   </div>
                 </div>
@@ -249,30 +259,35 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
 
       {/* ── STATE 1: ASYNC INGESTION & RECONCILING SIMULATOR ────────────────── */}
       {(activeTab === 'all' || activeTab === 'loading') && (
-        <div className="mb-10 bg-white dark:bg-[#131A13] p-6 sm:p-7 rounded-3xl shadow-sm border border-[#E2E5E9] dark:border-[#273827]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-5 border-b border-[#E2E5E9] dark:border-[#273827] gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className={`w-2.5 h-2.5 rounded-full ${isSimulating ? 'bg-[#9FE870] animate-ping' : 'bg-[#9FE870]'}`} />
-              <h2 className="text-[#163300] dark:text-white font-extrabold text-[18px] sm:text-[20px] tracking-tight">
-                1. Asynchronous Telemetry Ingestion &amp; Live Stream Simulator
-              </h2>
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-10 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-[#E8EAEF] dark:border-[#2E2F38] gap-4">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className={`w-2.5 h-2.5 rounded-full ${isSimulating ? 'bg-[#9FE870] animate-pulse' : 'bg-[#9FE870]'}`} />
+                <h2 className="text-[#14151A] dark:text-[#EDEDF0] font-bold text-xl sm:text-2xl tracking-tight">
+                  1. Asynchronous Telemetry Ingestion Simulator
+                </h2>
+              </div>
+              <p className="text-xs sm:text-sm text-[#6C6D77] dark:text-[#9B9CA6]">
+                Simulate high-throughput asynchronous multi-rail stream ingestion and reconciliation.
+              </p>
             </div>
-            <span className="px-3.5 py-1 rounded-full bg-[#EBF8E3] text-[#163300] dark:bg-[#1A2B1A] dark:text-[#9FE870] text-xs font-mono font-bold border border-[#9FE870] dark:border-[#9FE870]/30">
+            <span className="px-3.5 py-1.5 rounded-full bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] text-xs font-semibold border border-[#9FE870]/20">
               {isSimulating ? 'STATUS: INGESTING_STREAM' : 'STATUS: STREAM_RESOLVED'}
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 mb-5">
-            <span className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono font-semibold">Test Scenario:</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] font-medium mr-1">Test Scenario:</span>
             {['DEMO001', 'DEMO002', 'DEMO004', 'DEMO006'].map((demoId) => (
               <button
                 key={demoId}
                 disabled={isSimulating}
                 onClick={() => runSimulation(demoId)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all duration-200 ${
+                className={`px-4 py-2 rounded-full text-xs font-mono font-semibold transition-colors ${
                   simulatingTx === demoId
-                    ? 'bg-[#163300] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#163300] shadow-sm scale-105'
-                    : 'bg-[#F4F5F7] dark:bg-[#1A261A] text-[#163300] dark:text-[#F4F5F7] border border-[#E2E5E9] dark:border-[#273827] hover:bg-[#E8EAEF]'
+                    ? 'bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A]'
+                    : 'bg-[#F4F5F7] dark:bg-[#14151A] text-[#14151A] dark:text-[#EDEDF0] border border-[#E2E5E9] dark:border-[#2E2F38] hover:bg-[#E8EAEF] dark:hover:bg-[#26272E]'
                 }`}
               >
                 {demoId}
@@ -281,19 +296,19 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
             <button
               disabled={isSimulating}
               onClick={() => runSimulation(simulatingTx)}
-              className="ml-auto px-5 py-2 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] text-xs font-bold transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 shadow-sm disabled:opacity-50"
+              className="ml-auto px-5 py-2.5 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] hover:brightness-105 active:scale-[0.98] text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
             >
-              <span className={`material-symbols-outlined text-[16px] ${isSimulating ? 'animate-spin' : ''}`}>
+              <span className={`material-symbols-outlined text-[18px] ${isSimulating ? 'animate-spin' : ''}`}>
                 {isSimulating ? 'sync' : 'play_arrow'}
               </span>
               <span>{isSimulating ? 'Simulating...' : 'Run Telemetry Stream'}</span>
             </button>
           </div>
 
-          {/* Wise Lime Simulation Progress Bar */}
-          <div className="w-full bg-[#E2E5E9] dark:bg-[#1A261A] h-2.5 rounded-full overflow-hidden mb-6 p-0.5">
+          {/* Wise Accent Simulation Progress Bar */}
+          <div className="w-full bg-[#F4F5F7] dark:bg-[#14151A] h-2 rounded-full overflow-hidden border border-[#E2E5E9] dark:border-[#2E2F38]">
             <div 
-              className="bg-[#9FE870] h-full rounded-full transition-all duration-300 ease-out shadow-sm"
+              className="bg-[#9FE870] h-full rounded-full transition-all duration-300 ease-out"
               style={{ width: `${simProgress}%` }}
             />
           </div>
@@ -302,66 +317,66 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
             {/* Left: Stream Output Area */}
             <div className="lg:col-span-2 flex flex-col gap-4">
               {isSimulating ? (
-                <div className="p-6 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex flex-col gap-4 animate-pulse">
+                <div className="p-7 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-4 animate-pulse">
                   <div className="flex justify-between items-center">
-                    <div className="w-32 h-5 bg-[#E2E5E9] dark:bg-[#273827] rounded-full" />
-                    <div className="w-24 h-6 bg-[#E2E5E9] dark:bg-[#273827] rounded-full" />
+                    <div className="w-32 h-5 bg-[#E8EAEF] dark:bg-[#26272E] rounded-full" />
+                    <div className="w-24 h-6 bg-[#E8EAEF] dark:bg-[#26272E] rounded-full" />
                   </div>
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="h-20 bg-[#E2E5E9] dark:bg-[#273827] rounded-2xl" />
-                    <div className="h-20 bg-[#E2E5E9] dark:bg-[#273827] rounded-2xl" />
-                    <div className="h-20 bg-[#E2E5E9] dark:bg-[#273827] rounded-2xl" />
+                    <div className="h-20 bg-[#E8EAEF] dark:bg-[#26272E] rounded-2xl" />
+                    <div className="h-20 bg-[#E8EAEF] dark:bg-[#26272E] rounded-2xl" />
+                    <div className="h-20 bg-[#E8EAEF] dark:bg-[#26272E] rounded-2xl" />
                   </div>
-                  <div className="w-full h-14 bg-[#E2E5E9] dark:bg-[#273827] rounded-2xl" />
+                  <div className="w-full h-12 bg-[#E8EAEF] dark:bg-[#26272E] rounded-2xl" />
                 </div>
               ) : simResult ? (
-                <div className="p-6 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex flex-col gap-4">
+                <div className="p-7 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="font-mono font-black text-[#163300] dark:text-white text-base">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono font-bold text-[#14151A] dark:text-[#EDEDF0] text-base">
                         {simResult.transaction_id}
                       </span>
-                      <span className="text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
+                      <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] tabular-nums font-mono">
                         ({simResult.currency} {simResult.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })})
                       </span>
                     </div>
-                    <span className={`px-3 py-0.5 rounded-full text-xs font-mono font-bold border ${
-                      simResult.overall_status === 'SETTLED' ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
-                      simResult.overall_status === 'DELAYED' || simResult.overall_status === 'LEDGER_DELAY' ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
-                      'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      simResult.overall_status === 'SETTLED' ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20' :
+                      simResult.overall_status === 'DELAYED' || simResult.overall_status === 'LEDGER_DELAY' ? 'bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/20' :
+                      'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/20'
                     }`}>
                       {simResult.overall_status}
                     </span>
                   </div>
 
                   {/* 3 Nodes Result */}
-                  <div className="grid grid-cols-3 gap-3 font-mono text-xs">
-                    <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131A13] border border-[#E2E5E9] dark:border-[#273827] shadow-sm">
-                      <div className="text-[#596859] dark:text-[#9DA99D]">1. Gateway</div>
-                      <div className="font-black text-[#163300] dark:text-white mt-1">{simResult.gateway.status}</div>
-                      <div className="text-[11px] text-[#596859] dark:text-[#9DA99D] mt-0.5">₹{simResult.gateway.amount || 0}</div>
+                  <div className="grid grid-cols-3 gap-3 text-xs">
+                    <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38]">
+                      <div className="text-[#6C6D77] dark:text-[#9B9CA6]">1. Gateway</div>
+                      <div className="font-bold text-[#14151A] dark:text-[#EDEDF0] mt-1">{simResult.gateway.status}</div>
+                      <div className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] mt-0.5 tabular-nums font-mono">₹{simResult.gateway.amount || 0}</div>
                     </div>
-                    <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131A13] border border-[#E2E5E9] dark:border-[#273827] shadow-sm">
-                      <div className="text-[#596859] dark:text-[#9DA99D]">2. Bank</div>
-                      <div className="font-black text-[#163300] dark:text-white mt-1">{simResult.bank.status}</div>
-                      <div className="text-[11px] text-[#596859] dark:text-[#9DA99D] mt-0.5">₹{simResult.bank.amount || 0}</div>
+                    <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38]">
+                      <div className="text-[#6C6D77] dark:text-[#9B9CA6]">2. Bank</div>
+                      <div className="font-bold text-[#14151A] dark:text-[#EDEDF0] mt-1">{simResult.bank.status}</div>
+                      <div className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] mt-0.5 tabular-nums font-mono">₹{simResult.bank.amount || 0}</div>
                     </div>
-                    <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131A13] border border-[#E2E5E9] dark:border-[#273827] shadow-sm">
-                      <div className="text-[#596859] dark:text-[#9DA99D]">3. Ledger</div>
-                      <div className="font-black text-[#163300] dark:text-white mt-1">{simResult.ledger.status}</div>
-                      <div className="text-[11px] text-[#596859] dark:text-[#9DA99D] mt-0.5">₹{simResult.ledger.amount || 0}</div>
+                    <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38]">
+                      <div className="text-[#6C6D77] dark:text-[#9B9CA6]">3. Ledger</div>
+                      <div className="font-bold text-[#14151A] dark:text-[#EDEDF0] mt-1">{simResult.ledger.status}</div>
+                      <div className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] mt-0.5 tabular-nums font-mono">₹{simResult.ledger.amount || 0}</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-[#E2E5E9] dark:border-[#273827]">
-                    <span className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
+                  <div className="flex items-center justify-between pt-3 border-t border-[#E8EAEF] dark:border-[#2E2F38]">
+                    <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
                       {simResult.evidence[0] || 'Verified settlement stream recorded.'}
                     </span>
                     <button
                       onClick={() => handleInspect(simResult.transaction_id)}
-                      className="text-[#163300] dark:text-[#9FE870] font-mono text-xs font-bold hover:underline flex items-center gap-1"
+                      className="text-[#14151A] dark:text-[#9FE870] text-xs font-semibold hover:underline flex items-center gap-1"
                     >
-                      <span>Open Full Case</span>
+                      <span>Open Case</span>
                       <span>→</span>
                     </button>
                   </div>
@@ -370,23 +385,23 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
             </div>
 
             {/* Right: Stage Status Card */}
-            <div className="p-6 rounded-2xl bg-[#EBF8E3] dark:bg-[#1A2B1A] border border-[#9FE870] dark:border-[#9FE870]/30 flex flex-col items-center justify-center text-center">
-              <div className="w-12 h-12 rounded-full bg-[#9FE870] text-[#163300] flex items-center justify-center mb-3 shadow-sm">
-                <span className={`material-symbols-outlined text-[28px] ${isSimulating ? 'animate-spin' : ''}`}>
+            <div className="p-7 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col items-center justify-center text-center">
+              <div className="w-12 h-12 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center mb-3">
+                <span className={`material-symbols-outlined text-[26px] ${isSimulating ? 'animate-spin' : ''}`}>
                   {isSimulating ? 'sync' : 'verified'}
                 </span>
               </div>
-              <p className="font-bold text-[#163300] dark:text-white text-sm sm:text-base">{simStage}</p>
-              <p className="text-xs text-[#596859] dark:text-[#9DA99D] mt-1.5 max-w-[240px] leading-relaxed">
+              <p className="font-bold text-[#14151A] dark:text-[#EDEDF0] text-sm sm:text-base">{simStage}</p>
+              <p className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] mt-2 max-w-[240px] leading-relaxed">
                 {isSimulating 
-                  ? 'Validating gateway captures with correspondent banking settlement batches.' 
+                  ? 'Cross-referencing gateway captures with bank clearing batches.' 
                   : 'Telemetry ingestion complete with 100% deterministic accuracy.'}
               </p>
               <button
                 onClick={() => runSimulation(simulatingTx)}
-                className="mt-4 px-5 py-2 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] text-xs font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                className="mt-5 px-5 py-2.5 rounded-full bg-[#F4F5F7] dark:bg-[#26272E] hover:bg-[#E8EAEF] dark:hover:bg-[#2E2F38] text-[#14151A] dark:text-[#EDEDF0] text-xs font-semibold transition-colors border border-[#E2E5E9] dark:border-[#2E2F38]"
               >
-                Re-test Ingestion Stream
+                Re-run Stream
               </button>
             </div>
           </div>
@@ -395,54 +410,54 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
 
       {/* ── STATE 2: ERROR 404 NOT FOUND RECOVERY ───────────────────────────── */}
       {(activeTab === 'all' || activeTab === 'error-notfound') && (
-        <div className="mb-10 bg-white dark:bg-[#131A13] p-6 sm:p-7 rounded-3xl shadow-sm border border-[#E2E5E9] dark:border-[#273827]">
-          <div className="flex items-center justify-between pb-4 mb-5 border-b border-[#E2E5E9] dark:border-[#273827]">
-            <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-              <h2 className="text-[#163300] dark:text-white font-extrabold text-[18px] sm:text-[20px] tracking-tight">
-                2. Error State — Transaction Not Found (404) &amp; Self-Recovery Flow
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-10 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-6">
+          <div className="flex items-center justify-between pb-5 border-b border-[#E8EAEF] dark:border-[#2E2F38]">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#F1483F]" />
+              <h2 className="text-[#14151A] dark:text-[#EDEDF0] font-bold text-xl sm:text-2xl tracking-tight">
+                2. Graceful Error Recovery (404 Missing Record)
               </h2>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#FDE8E8] text-[#9E1B1B] text-xs font-mono font-bold border border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A]">
-              CODE: ERR_TX_NOT_FOUND
+            <span className="px-3 py-1 rounded-full bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] text-xs font-semibold border border-[#F1483F]/20">
+              ERR_NOT_FOUND
             </span>
           </div>
 
-          <div className="py-6 px-6 flex flex-col items-center justify-center text-center max-w-lg mx-auto w-full">
-            <div className="w-14 h-14 rounded-full bg-[#FDE8E8] text-[#9E1B1B] dark:bg-[#3D1414] dark:text-[#FF8A8A] flex items-center justify-center mb-4 border border-[#FCA5A5] dark:border-[#521E1E]">
+          <div className="py-8 px-6 flex flex-col items-center justify-center text-center max-w-md mx-auto w-full">
+            <div className="w-14 h-14 rounded-full bg-[#F1483F]/10 text-[#F1483F] flex items-center justify-center mb-4">
               <span className="material-symbols-outlined text-[28px]">search_off</span>
             </div>
-            <h3 className="text-xl font-extrabold text-[#163300] dark:text-white mb-1.5">
-              Transaction not found in datasets
+            <h3 className="text-xl font-bold text-[#14151A] dark:text-[#EDEDF0] mb-2">
+              Transaction Not Found in Active Feeds
             </h3>
-            <p className="text-xs sm:text-sm text-[#596859] dark:text-[#9DA99D] mb-6 leading-relaxed">
-              The query <code className="px-2.5 py-0.5 rounded-full bg-[#F4F5F7] dark:bg-[#1A261A] font-mono text-[#163300] dark:text-[#9FE870] font-bold border border-[#E2E5E9] dark:border-[#273827] text-xs">{searchedNotFound || 'TX-UNKNOWN-000'}</code> does not exist in gateway.csv, bank.csv, or ledger.csv.
+            <p className="text-xs sm:text-sm text-[#6C6D77] dark:text-[#9B9CA6] mb-6 leading-relaxed">
+              The case identifier <code className="px-2.5 py-0.5 rounded-full bg-[#F4F5F7] dark:bg-[#14151A] font-mono text-[#14151A] dark:text-[#9FE870] font-bold border border-[#E2E5E9] dark:border-[#2E2F38] text-xs">{searchedNotFound || 'TX-UNKNOWN-000'}</code> does not match any row in the current datasets.
             </p>
 
             {/* Wise Search Bar */}
-            <form onSubmit={handleTestSearch} className="flex flex-col sm:flex-row gap-2.5 w-full max-w-md mb-5">
+            <form onSubmit={handleTestSearch} className="flex flex-col sm:flex-row gap-2.5 w-full mb-5">
               <input 
-                className="flex-1 bg-[#F4F5F7] dark:bg-[#1A261A] text-[#163300] dark:text-white text-xs sm:text-sm px-5 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-[#9FE870] border border-[#E2E5E9] dark:border-[#273827] font-mono" 
-                placeholder="Try valid ID: DEMO001, DEMO004..." 
+                className="flex-1 bg-[#F8F9FA] dark:bg-[#14151A] text-[#14151A] dark:text-[#EDEDF0] text-xs sm:text-sm px-5 py-3 rounded-full focus:outline-none focus:ring-1 focus:ring-[#9FE870] border border-[#E2E5E9] dark:border-[#2E2F38] font-mono placeholder:text-[#6C6D77] dark:placeholder:text-[#9B9CA6]" 
+                placeholder="Try DEMO001, DEMO004..." 
                 type="text"
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
               />
               <button 
                 type="submit"
-                className="px-6 py-3 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] text-xs sm:text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm whitespace-nowrap"
+                className="px-6 py-3 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] hover:brightness-105 active:scale-[0.98] text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap"
               >
                 Search Case
               </button>
             </form>
 
-            <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
-              <span className="font-semibold">Quick test:</span>
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+              <span className="font-medium">Quick benchmarks:</span>
               {['DEMO001', 'DEMO003', 'DEMO007'].map((id) => (
                 <button
                   key={id}
                   onClick={() => handleInspect(id)}
-                  className="px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#1A261A] text-[#163300] dark:text-white border border-[#E2E5E9] dark:border-[#273827] hover:bg-[#163300] hover:text-[#9FE870] dark:hover:bg-[#9FE870] dark:hover:text-[#163300] font-bold transition-all"
+                  className="px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#14151A] text-[#14151A] dark:text-[#EDEDF0] border border-[#E2E5E9] dark:border-[#2E2F38] hover:bg-[#14151A] hover:text-[#9FE870] dark:hover:bg-[#9FE870] dark:hover:text-[#14151A] font-medium transition-colors font-mono"
                 >
                   {id} →
                 </button>
@@ -454,40 +469,40 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
 
       {/* ── STATE 3: OFFLINE SNAPSHOT CACHE ────────────────────────────────── */}
       {(activeTab === 'all' || activeTab === 'error-backend') && (
-        <div className="mb-10 bg-white dark:bg-[#131A13] p-6 sm:p-7 rounded-3xl shadow-sm border border-[#E2E5E9] dark:border-[#273827]">
-          <div className="flex items-center justify-between pb-4 mb-5 border-b border-[#E2E5E9] dark:border-[#273827]">
-            <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-              <h2 className="text-[#163300] dark:text-white font-extrabold text-[18px] sm:text-[20px] tracking-tight">
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-10 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-6">
+          <div className="flex items-center justify-between pb-5 border-b border-[#E8EAEF] dark:border-[#2E2F38]">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#F0B84B]" />
+              <h2 className="text-[#14151A] dark:text-[#EDEDF0] font-bold text-xl sm:text-2xl tracking-tight">
                 3. Offline Snapshot Cache Fallback
               </h2>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#FFF2CC] text-[#875800] text-xs font-mono font-bold border border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269]">
-              STATUS: LOCAL_CSV_CACHE_READY
+            <span className="px-3 py-1 rounded-full bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] text-xs font-semibold border border-[#F0B84B]/20">
+              CSV_CACHE_READY
             </span>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex flex-col md:flex-row items-center gap-6">
-            <div className="w-14 h-14 rounded-full bg-[#163300] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#163300] flex items-center justify-center shrink-0 shadow-sm">
+          <div className="p-7 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col md:flex-row items-center gap-6">
+            <div className="w-14 h-14 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-[28px]">database</span>
             </div>
             <div className="flex-1 text-center md:text-left">
-              <h3 className="font-extrabold text-[#163300] dark:text-white text-[17px]">
-                100% Deterministic Fallback Guaranteed
+              <h3 className="font-bold text-[#14151A] dark:text-[#EDEDF0] text-lg">
+                Deterministic Offline Fallback
               </h3>
-              <p className="text-xs sm:text-sm text-[#596859] dark:text-[#9DA99D] mt-1 leading-relaxed">
-                Even if the remote network drops, PayTrace queries all 291 audited transactions from local memory. Reconciliations remain 100% accurate.
+              <p className="text-xs sm:text-sm text-[#6C6D77] dark:text-[#9B9CA6] mt-1.5 leading-relaxed">
+                Even if network connectivity to FastAPI is severed, PayTrace serves all 291 audited records directly from local bundle memory with 100% accuracy.
               </p>
               {cacheVerified && (
-                <div className="mt-3 p-3.5 rounded-2xl bg-[#EBF8E3] dark:bg-[#1A2B1A] border border-[#9FE870] text-[#163300] dark:text-[#9FE870] font-mono text-xs flex items-center gap-2">
+                <div className="mt-3.5 p-3.5 rounded-2xl bg-[#9FE870]/10 border border-[#9FE870]/20 text-[#2D5A0F] dark:text-[#9FE870] text-xs flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                  <span>Cache Verified: 304 gateway rows, 251 bank rows, 251 ledger entries, 291 reconciled cases ready.</span>
+                  <span>Cache Verified: 304 gateway records, 251 bank records, 251 ledger journals, 291 cases verified.</span>
                 </div>
               )}
             </div>
             <button 
               onClick={() => setCacheVerified(true)}
-              className="px-6 py-3 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] text-xs sm:text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm whitespace-nowrap"
+              className="px-6 py-3 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] hover:brightness-105 active:scale-[0.98] text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap"
             >
               {cacheVerified ? 'Cache Verified ✓' : 'Verify Local Cache (291)'}
             </button>
@@ -497,33 +512,33 @@ export const StatesDebug: React.FC<StatesDebugProps> = ({ setActivePage, setSele
 
       {/* ── STATE 4: DEGRADED LLM MODE ─────────────────────────────────────── */}
       {(activeTab === 'all' || activeTab === 'partial') && (
-        <div className="bg-white dark:bg-[#131A13] p-6 sm:p-7 rounded-3xl shadow-sm border border-[#E2E5E9] dark:border-[#273827]">
-          <div className="flex items-center justify-between pb-4 mb-5 border-b border-[#E2E5E9] dark:border-[#273827]">
-            <div className="flex items-center gap-2.5">
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-10 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-6">
+          <div className="flex items-center justify-between pb-5 border-b border-[#E8EAEF] dark:border-[#2E2F38]">
+            <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#9FE870]" />
-              <h2 className="text-[#163300] dark:text-white font-extrabold text-[18px] sm:text-[20px] tracking-tight">
-                4. Partial Failure Mode — LLM Degraded, Deterministic Truth 100% Functional
+              <h2 className="text-[#14151A] dark:text-[#EDEDF0] font-bold text-xl sm:text-2xl tracking-tight">
+                4. Partial Degradation — Deterministic Core Isolated from AI
               </h2>
             </div>
-            <span className="px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#1A261A] text-[#163300] dark:text-white text-xs font-mono font-bold border border-[#E2E5E9] dark:border-[#273827]">
-              STATUS: TRUTH_ENGINE_UNTOUCHED
+            <span className="px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#14151A] text-[#14151A] dark:text-[#EDEDF0] text-xs font-semibold border border-[#E2E5E9] dark:border-[#2E2F38]">
+              TRUTH_ENGINE_ISOLATED
             </span>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex flex-col md:flex-row items-center gap-6">
-            <div className="w-14 h-14 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] text-[#163300] dark:text-[#9FE870] flex items-center justify-center shrink-0 border border-[#9FE870]">
+          <div className="p-7 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col md:flex-row items-center gap-6">
+            <div className="w-14 h-14 rounded-full bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] flex items-center justify-center shrink-0 border border-[#9FE870]/20">
               <span className="material-symbols-outlined text-[28px]">shield</span>
             </div>
             <div className="flex-1 text-center md:text-left">
-              <h3 className="font-extrabold text-[#163300] dark:text-white text-[17px]">
-                Core Architecture Principle: Deterministic Truth First
+              <h3 className="font-bold text-[#14151A] dark:text-[#EDEDF0] text-lg">
+                Deterministic Truth Always Precedes LLM
               </h3>
-              <p className="text-xs sm:text-sm text-[#596859] dark:text-[#9DA99D] mt-1 leading-relaxed">
-                The reconciliation engine decides facts. The AI only explains facts. If Gemini API reaches quota or is offline, the deterministic evidence engine presents full factual truth without any disruption.
+              <p className="text-xs sm:text-sm text-[#6C6D77] dark:text-[#9B9CA6] mt-1.5 leading-relaxed">
+                The core settlement engine determines audit facts deterministically. The AI solely generates plain-language explanations. If an LLM rate limit is encountered, deterministic reconciliation remains unaffected.
               </p>
             </div>
-            <span className="text-xs font-mono font-bold text-[#163300] dark:text-[#9FE870] bg-[#EBF8E3] dark:bg-[#1A2B1A] px-3.5 py-1.5 rounded-full border border-[#9FE870] whitespace-nowrap">
-              Anti-Hallucination Safe
+            <span className="text-xs font-semibold text-[#2D5A0F] dark:text-[#9FE870] bg-[#9FE870]/12 px-4 py-2 rounded-full border border-[#9FE870]/20 whitespace-nowrap">
+              Anti-Hallucination Verified
             </span>
           </div>
         </div>

@@ -64,10 +64,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F5F7] dark:bg-[#0C110C] font-sans text-[#163300] dark:text-[#F2F5F2] transition-colors duration-300 relative selection:bg-[#9FE870] selection:text-[#163300]">
-      {/* Wise Signature Lime Green Ambient Glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[360px] bg-gradient-to-b from-[#9FE870]/20 via-[#9FE870]/5 to-transparent dark:from-[#9FE870]/12 dark:via-[#163300]/30 dark:to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-
+    <div className="min-h-screen bg-[#F4F5F7] dark:bg-[#14151A] font-sans text-[#14151A] dark:text-[#EDEDF0] transition-colors duration-200 relative selection:bg-[#9FE870] selection:text-[#14151A]">
       {/* Floating Centered Wise Pill Navbar */}
       <Navbar activePage={activePage} setActivePage={setActivePage} />
 

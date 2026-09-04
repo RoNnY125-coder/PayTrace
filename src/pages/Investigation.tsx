@@ -203,33 +203,37 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="w-12 h-12 rounded-full border-3 border-[#9FE870] border-t-[#163300] dark:border-t-white animate-spin" />
-        <h2 className="text-xl font-bold text-[#163300] dark:text-white">
-          Ingesting Ledger Telemetry for {currentTx}...
-        </h2>
-        <p className="text-sm text-[#596859] dark:text-[#9DA99D]">
-          Cross-referencing gateway.csv, bank.csv, and ledger.csv
-        </p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5">
+        <div className="w-12 h-12 rounded-full border-2 border-[#9FE870] border-t-transparent animate-spin" />
+        <div className="flex flex-col items-center gap-1 text-center">
+          <h2 className="text-xl font-bold text-[#14151A] dark:text-[#EDEDF0]">
+            Ingesting Ledger Telemetry for {currentTx}...
+          </h2>
+          <p className="text-sm text-[#6C6D77] dark:text-[#9B9CA6]">
+            Cross-referencing gateway.csv, bank.csv, and ledger.csv
+          </p>
+        </div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-600">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-6 text-center">
+        <div className="w-16 h-16 rounded-full bg-[#F1483F]/10 flex items-center justify-center text-[#F1483F]">
           <span className="material-symbols-outlined text-[32px]">error</span>
         </div>
-        <h2 className="text-2xl font-bold text-[#163300] dark:text-white">
-          Transaction '{currentTx}' Not Found
-        </h2>
-        <p className="text-sm text-[#596859] dark:text-[#9DA99D] max-w-md">
-          This transaction ID does not exist in the active CSV audit datasets (gateway.csv, bank.csv, ledger.csv).
-        </p>
+        <div className="flex flex-col items-center gap-2 max-w-md">
+          <h2 className="text-2xl font-bold text-[#14151A] dark:text-[#EDEDF0]">
+            Transaction '{currentTx}' Not Found
+          </h2>
+          <p className="text-sm text-[#6C6D77] dark:text-[#9B9CA6]">
+            This transaction ID does not exist in the active CSV audit datasets (gateway.csv, bank.csv, ledger.csv).
+          </p>
+        </div>
         <button
           onClick={() => setActivePage('dashboard')}
-          className="mt-2 px-6 py-3 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+          className="px-6 py-3 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] hover:brightness-105 active:scale-[0.98] font-semibold text-sm transition-colors"
         >
           Return to Ledger Dashboard
         </button>
@@ -239,287 +243,328 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
 
   const isSettled = data.overall_status === 'SETTLED';
   const isDelayed = data.overall_status === 'DELAYED' || data.overall_status === 'LEDGER_DELAY';
+  const isException = ['CRITICAL_EXCEPTION', 'EXCEPTION', 'DATA_INCONSISTENCY', 'DUPLICATE_RECORD'].includes(data.overall_status);
   const hasExceptions = data.exceptions.length > 0;
 
+  const statusLabel = retriggered ? 'Manually Reconciled' :
+    isSettled ? 'Verified Settled' :
+    isDelayed ? 'Settlement Delayed' :
+    isException ? 'Critical Discrepancy' :
+    data.overall_status.replace(/_/g, ' ');
+
   return (
-    <div className="flex flex-col w-full px-4 sm:px-6 py-6 gap-6 max-w-7xl mx-auto pb-28">
-      {/* ── 1. HEADER & BREADCRUMB ────────────────────────────────────────── */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
+    <div className="flex flex-col w-full px-6 sm:px-8 py-8 gap-10 max-w-7xl mx-auto pb-28">
+      {/* ── 1. TOP NAV & ACTIONS ────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="flex items-center gap-3">
           <button 
             onClick={() => setActivePage('dashboard')} 
-            className="hover:text-[#163300] dark:hover:text-white transition-colors"
+            className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1F26] hover:bg-[#F4F5F7] dark:hover:bg-[#26272E] border border-[#E2E5E9] dark:border-[#2E2F38] flex items-center justify-center transition-colors text-[#14151A] dark:text-[#EDEDF0]"
+            title="Back to Dashboard"
           >
-            Ledger Dashboard
+            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
           </button>
-          <span>/</span>
-          <span>Cases</span>
-          <span>/</span>
-          <span className="text-[#163300] dark:text-[#9FE870] font-bold">{data.transaction_id}</span>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+              <button 
+                onClick={() => setActivePage('dashboard')} 
+                className="hover:text-[#14151A] dark:hover:text-[#EDEDF0] transition-colors"
+              >
+                Dashboard
+              </button>
+              <span>/</span>
+              <span>Cases</span>
+              <span>/</span>
+              <span className="text-[#14151A] dark:text-[#EDEDF0] font-mono font-medium">{data.transaction_id}</span>
+            </div>
+            <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">Multi-Rail Audit Investigation</span>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <button 
-              onClick={() => setActivePage('dashboard')} 
-              className="w-10 h-10 rounded-full bg-white dark:bg-[#131A13] hover:bg-[#F4F5F7] dark:hover:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex items-center justify-center transition-all hover:scale-105 active:scale-95 text-[#163300] dark:text-white shadow-sm"
-              title="Back to Dashboard"
-            >
-              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-            </button>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="font-mono font-extrabold text-[#163300] dark:text-white tracking-tight text-[28px] sm:text-[32px]">
-                  {data.transaction_id}
-                </h1>
-                <span className={`px-3 py-1 rounded-full text-xs font-mono font-bold border ${
-                  isSettled ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
-                  isDelayed ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269] dark:border-[#FFD269]/30' :
-                  'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A] dark:border-[#FCA5A5]/30'
-                }`}>
-                  {data.overall_status}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Wise Action Buttons: Export PDF & Share */}
-          <div className="flex items-center gap-2.5">
-            <button 
-              onClick={handleExportPDF}
-              className="px-5 py-2.5 rounded-full bg-white dark:bg-[#131A13] hover:bg-[#F4F5F7] dark:hover:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] text-[#163300] dark:text-white text-xs sm:text-sm font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 shadow-sm"
-              title="Download official PDF audit report"
-            >
-              <span className="material-symbols-outlined text-[18px] text-[#9E1B1B]">picture_as_pdf</span>
-              <span>Export PDF Audit</span>
-            </button>
-            <button 
-              onClick={handleShare}
-              className="px-5 py-2.5 rounded-full bg-[#163300] hover:bg-[#244D00] text-[#9FE870] dark:bg-[#9FE870] dark:hover:bg-[#B5F58D] dark:text-[#163300] text-xs sm:text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 shadow-sm"
-              title="Share verified case telemetry"
-            >
-              <span className="material-symbols-outlined text-[18px]">share</span>
-              <span>Share Case</span>
-            </button>
-          </div>
+        {/* Wise Action Buttons: Export PDF & Share */}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleExportPDF}
+            className="px-5 py-2.5 rounded-full bg-white dark:bg-[#1E1F26] hover:bg-[#F4F5F7] dark:hover:bg-[#26272E] border border-[#E2E5E9] dark:border-[#2E2F38] text-[#14151A] dark:text-[#EDEDF0] text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
+            title="Download official PDF audit report"
+          >
+            <span className="material-symbols-outlined text-[18px] text-[#F1483F]">picture_as_pdf</span>
+            <span>Export PDF Audit</span>
+          </button>
+          <button 
+            onClick={handleShare}
+            className="px-5 py-2.5 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] hover:brightness-105 active:scale-[0.98] text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
+            title="Share verified case telemetry"
+          >
+            <span className="material-symbols-outlined text-[18px]">share</span>
+            <span>Share Case</span>
+          </button>
         </div>
       </div>
 
-      {/* ── 2. SETTLEMENT OVERVIEW BANNER CARD ─────────────────────────────── */}
-      <div className="w-full bg-white dark:bg-[#131A13] rounded-3xl p-6 sm:p-7 shadow-sm border border-[#E2E5E9] dark:border-[#273827] relative overflow-hidden">
-        <div className={`absolute top-0 left-0 w-2 h-full ${
-          retriggered ? 'bg-[#9FE870]' :
-          isSettled ? 'bg-[#9FE870]' :
-          isDelayed ? 'bg-amber-500' : 'bg-red-500'
-        }`} />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-              retriggered || isSettled ? 'bg-[#EBF8E3] text-[#163300] dark:bg-[#1A2B1A] dark:text-[#9FE870]' :
-              isDelayed ? 'bg-[#FFF2CC] text-[#875800] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
-              'bg-[#FDE8E8] text-[#9E1B1B] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
-            }`}>
-              <span className="material-symbols-outlined text-[26px]">
-                {retriggered || isSettled ? 'check_circle' : isDelayed ? 'warning' : 'error'}
+      {/* ── 2. HERO STATUS BANNER (THE BOLDEST, LARGEST FOCAL POINT) ─────── */}
+      <div className="w-full bg-white dark:bg-[#1E1F26] rounded-3xl p-7 sm:p-10 border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-[#E8EAEF] dark:border-[#2E2F38]">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                retriggered || isSettled ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/25' :
+                isDelayed ? 'bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/25' :
+                'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/25'
+              }`}>
+                ● {statusLabel}
+              </span>
+              <span className="text-xs font-mono text-[#6C6D77] dark:text-[#9B9CA6]">
+                Case Ref: {data.transaction_id}
               </span>
             </div>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold uppercase text-[#596859] dark:text-[#9DA99D]">
-                  Engine Classification:
-                </span>
-                <span className="font-mono text-xs font-bold text-[#163300] dark:text-[#9FE870]">
-                  {retriggered ? 'MANUALLY_RECONCILED' : data.overall_status}
-                </span>
-              </div>
-              <h2 className="text-[#163300] dark:text-white font-extrabold text-[19px] sm:text-[22px] tracking-tight">
-                {retriggered ? 'Settlement Synchronized with Internal Ledger' : 
-                 data.overall_status === 'SETTLED' ? 'Multi-Rail Settlement Verified Clean' :
-                 data.overall_status === 'CRITICAL_EXCEPTION' ? 'Deterministic Discrepancy Flagged Across Settlement Rails' :
-                 data.overall_status === 'DELAYED' || data.overall_status === 'LEDGER_DELAY' ? 'Downstream Settlement Delay Detected' :
-                 data.overall_status === 'FAILED' ? 'Gateway Authorization Failure Recorded' :
-                 data.overall_status === 'REJECTED' ? 'Correspondent Bank Clearing Rejected' :
-                 'Multi-Rail Reconciliation Audit Active'}
-              </h2>
-            </div>
+
+            {/* Massive Bold Headline */}
+            <h1 className="text-[34px] sm:text-[48px] font-extrabold tracking-tight text-[#14151A] dark:text-[#EDEDF0] leading-none">
+              {retriggered ? 'Settlement Synchronized' :
+               isSettled ? 'Settlement Verified Clean' :
+               data.overall_status === 'CRITICAL_EXCEPTION' ? 'Discrepancy Flagged' :
+               data.overall_status === 'DELAYED' || data.overall_status === 'LEDGER_DELAY' ? 'Downstream Rail Delayed' :
+               data.overall_status === 'FAILED' ? 'Authorization Failed' :
+               data.overall_status.replace(/_/g, ' ')}
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#6C6D77] dark:text-[#9B9CA6] max-w-2xl">
+              {retriggered ? 'Manual ledger journal entry matched and balanced against core bank statement.' : 
+               isSettled ? 'Gateway capture, bank statement credit, and general ledger journal match across all dimensions.' :
+               data.overall_status === 'CRITICAL_EXCEPTION' ? 'Deterministic mismatch detected between rail nodes requiring reconciliation escalation.' :
+               data.overall_status === 'DELAYED' || data.overall_status === 'LEDGER_DELAY' ? 'Settlement pipeline exceeded the acceptable batch SLA window.' :
+               data.overall_status === 'FAILED' ? 'Payment gateway authorization rejected by the issuing network.' :
+               'Deterministic multi-rail verification active.'}
+            </p>
           </div>
 
-          {/* 4 Summary Pills */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] font-mono">
-            <div className="flex flex-col">
-              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Case ID</span>
-              <span className="text-sm font-bold text-[#163300] dark:text-white">{data.transaction_id}</span>
+          {/* Focal Settlement Value */}
+          <div className="flex flex-col lg:items-end justify-center p-6 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] min-w-[220px]">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6C6D77] dark:text-[#9B9CA6] mb-1">
+              Settlement Amount
+            </span>
+            <div className="text-[34px] sm:text-[44px] font-bold text-[#14151A] dark:text-[#EDEDF0] tabular-nums tracking-tight">
+              {data.currency === 'USD' ? '$' : '₹'}{data.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
             </div>
-            <div className="flex flex-col">
-              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Settlement Amount</span>
-              <span className="text-sm font-bold text-[#163300] dark:text-white">
-                {data.currency === 'USD' ? '$' : '₹'}{data.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`w-2 h-2 rounded-full ${data.confidence === 'HIGH' ? 'bg-[#9FE870]' : data.confidence === 'MEDIUM' ? 'bg-[#F0B84B]' : 'bg-[#F1483F]'}`} />
+              <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+                {data.confidence} Deterministic Match
               </span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Delay Point</span>
-              <span className={`text-sm font-bold ${data.delay_point ? 'text-amber-600 dark:text-amber-400' : 'text-[#2D5A0F] dark:text-[#9FE870]'}`}>
-                {data.delay_point || 'None (Clean)'}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Deterministic Confidence</span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className={`w-2 h-2 rounded-full ${data.confidence === 'HIGH' ? 'bg-[#9FE870]' : data.confidence === 'MEDIUM' ? 'bg-amber-500' : 'bg-red-500'}`} />
-                <span className="text-sm font-bold text-[#163300] dark:text-white">{data.confidence}</span>
-              </div>
-            </div>
+          </div>
+        </div>
+
+        {/* 4 Summary Metadata Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38]">
+            <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider block mb-1">Case Identifier</span>
+            <span className="text-sm font-semibold font-mono text-[#14151A] dark:text-[#EDEDF0]">{data.transaction_id}</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38]">
+            <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider block mb-1">Delay Point</span>
+            <span className={`text-sm font-semibold ${data.delay_point ? 'text-[#875800] dark:text-[#F0B84B]' : 'text-[#2D5A0F] dark:text-[#9FE870]'}`}>
+              {data.delay_point || 'None (In Sync)'}
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38]">
+            <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider block mb-1">Settlement Engine</span>
+            <span className="text-sm font-semibold text-[#14151A] dark:text-[#EDEDF0]">PayTrace Core v4.2</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38]">
+            <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider block mb-1">Exceptions Flagged</span>
+            <span className={`text-sm font-semibold ${data.exceptions.length > 0 ? 'text-[#9E1B1B] dark:text-[#F1483F]' : 'text-[#2D5A0F] dark:text-[#9FE870]'}`}>
+              {data.exceptions.length > 0 ? `${data.exceptions.length} Flagged` : '0 Clean'}
+            </span>
           </div>
         </div>
       </div>
 
       {/* ── 3. THREE-NODE MULTI-HOP RECONCILIATION PIPELINE ────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Node 1: Payment Gateway */}
-        <div className="bg-white dark:bg-[#131A13] rounded-3xl p-6 shadow-sm border border-[#E2E5E9] dark:border-[#273827] flex flex-col justify-between hover:shadow-md transition-all">
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider">
-                1. Gateway Node
-              </span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${
-                data.gateway.found ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' : 'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5]'
-              }`}>
-                {data.gateway.found ? data.gateway.status : 'NOT_FOUND'}
-              </span>
-            </div>
-            <div className="font-mono text-[26px] font-black text-[#163300] dark:text-white mb-1">
-              {data.gateway.currency === 'USD' ? '$' : '₹'}{data.gateway.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
-            </div>
-            <div className="text-xs text-[#596859] dark:text-[#9DA99D]">
-              Payment Gateway Capture Event
-            </div>
-          </div>
-          <div className="mt-5 pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
-            <span>Captured At:</span>
-            <span className="text-[#163300] dark:text-white font-semibold">{data.gateway.timestamp || 'N/A'}</span>
-          </div>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#14151A] dark:text-[#EDEDF0] tracking-tight">
+            Settlement Hop Audit
+          </h2>
+          <p className="text-xs sm:text-sm text-[#6C6D77] dark:text-[#9B9CA6]">
+            Three independent verification nodes cross-referenced deterministically.
+          </p>
         </div>
 
-        {/* Node 2: Bank Statement */}
-        <div className={`bg-white dark:bg-[#131A13] rounded-3xl p-6 shadow-sm border flex flex-col justify-between relative hover:shadow-md transition-all ${
-          data.delay_point === 'BANK' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-[#E2E5E9] dark:border-[#273827]'
-        }`}>
-          {data.delay_point === 'BANK' && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-              Identified Bottleneck
-            </div>
-          )}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider">
-                2. Core Banking Node
-              </span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${
-                data.bank.status === 'SETTLED' ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
-                data.bank.status === 'PENDING' ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
-                'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
-              }`}>
-                {data.bank.found ? data.bank.status : 'MISSING_IN_BANK'}
-              </span>
-            </div>
-            <div className="font-mono text-[26px] font-black text-[#163300] dark:text-white mb-1">
-              {data.bank.currency === 'USD' ? '$' : '₹'}{data.bank.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
-            </div>
-            <div className="text-xs text-[#596859] dark:text-[#9DA99D]">
-              Bank Statement &amp; Settlement File
-            </div>
-          </div>
-          <div className="mt-5 pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
-            <span>Settled At:</span>
-            <span className="text-[#163300] dark:text-white font-semibold">{data.bank.settled_at || 'Pending settlement'}</span>
-          </div>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Node 1: Payment Gateway */}
+          <div className="bg-white dark:bg-[#1E1F26] rounded-3xl p-7 sm:p-8 border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col justify-between hover:border-[#9FE870]/40 transition-colors">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider">
+                  01 · Gateway Rail
+                </span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  data.gateway.found ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20' : 'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/20'
+                }`}>
+                  {data.gateway.found ? data.gateway.status : 'NOT_FOUND'}
+                </span>
+              </div>
 
-        {/* Node 3: General Ledger */}
-        <div className={`bg-white dark:bg-[#131A13] rounded-3xl p-6 shadow-sm border flex flex-col justify-between relative hover:shadow-md transition-all ${
-          data.delay_point === 'LEDGER' ? 'border-amber-500/50 ring-2 ring-amber-500/20' : 'border-[#E2E5E9] dark:border-[#273827]'
-        }`}>
-          {data.delay_point === 'LEDGER' && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-              Identified Bottleneck
+              <div>
+                <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] block mb-1">Captured Amount</span>
+                <div className="text-[28px] sm:text-[34px] font-bold text-[#14151A] dark:text-[#EDEDF0] tabular-nums tracking-tight">
+                  {data.gateway.currency === 'USD' ? '$' : '₹'}{data.gateway.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                </div>
+                <p className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] mt-1">
+                  Payment Gateway Capture Event
+                </p>
+              </div>
             </div>
-          )}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider">
-                3. General Ledger Node
-              </span>
-              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${
-                data.ledger.status === 'POSTED' ? 'bg-[#EBF8E3] text-[#163300] border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30' :
-                data.ledger.status === 'PENDING' ? 'bg-[#FFF2CC] text-[#875800] border-[#FFD269] dark:bg-[#3D2C04] dark:text-[#FFD269]' :
-                'bg-[#FDE8E8] text-[#9E1B1B] border-[#FCA5A5] dark:bg-[#3D1414] dark:text-[#FF8A8A]'
-              }`}>
-                {data.ledger.found ? data.ledger.status : 'NOT_POSTED'}
-              </span>
-            </div>
-            <div className="font-mono text-[26px] font-black text-[#163300] dark:text-white mb-1">
-              {data.ledger.currency === 'USD' ? '$' : '₹'}{data.ledger.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
-            </div>
-            <div className="text-xs text-[#596859] dark:text-[#9DA99D]">
-              Core Double-Entry Accounting System
+
+            <div className="mt-8 pt-4 border-t border-[#E8EAEF] dark:border-[#2E2F38] flex justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+              <span>Captured At:</span>
+              <span className="text-[#14151A] dark:text-[#EDEDF0] font-mono font-medium">{data.gateway.timestamp || 'N/A'}</span>
             </div>
           </div>
-          <div className="mt-5 pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
-            <span>Posted At:</span>
-            <span className="text-[#163300] dark:text-white font-semibold">{data.ledger.posted_at || 'Pending posting'}</span>
+
+          {/* Node 2: Core Bank Statement */}
+          <div className={`bg-white dark:bg-[#1E1F26] rounded-3xl p-7 sm:p-8 border flex flex-col justify-between transition-colors ${
+            data.delay_point === 'BANK' ? 'border-[#F0B84B] ring-1 ring-[#F0B84B]/30' : 'border-[#E2E5E9] dark:border-[#2E2F38] hover:border-[#9FE870]/40'
+          }`}>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider">
+                  02 · Core Bank
+                </span>
+                <div className="flex items-center gap-2">
+                  {data.delay_point === 'BANK' && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F0B84B]/15 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/30">
+                      Bottleneck
+                    </span>
+                  )}
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    data.bank.status === 'SETTLED' ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20' :
+                    data.bank.status === 'PENDING' ? 'bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/20' :
+                    'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/20'
+                  }`}>
+                    {data.bank.found ? data.bank.status : 'MISSING'}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] block mb-1">Bank Credited Amount</span>
+                <div className="text-[28px] sm:text-[34px] font-bold text-[#14151A] dark:text-[#EDEDF0] tabular-nums tracking-tight">
+                  {data.bank.currency === 'USD' ? '$' : '₹'}{data.bank.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                </div>
+                <p className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] mt-1">
+                  Bank Settlement Statement
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-[#E8EAEF] dark:border-[#2E2F38] flex justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+              <span>Settled At:</span>
+              <span className="text-[#14151A] dark:text-[#EDEDF0] font-mono font-medium">{data.bank.settled_at || 'Pending'}</span>
+            </div>
+          </div>
+
+          {/* Node 3: General Ledger */}
+          <div className={`bg-white dark:bg-[#1E1F26] rounded-3xl p-7 sm:p-8 border flex flex-col justify-between transition-colors ${
+            data.delay_point === 'LEDGER' ? 'border-[#F0B84B] ring-1 ring-[#F0B84B]/30' : 'border-[#E2E5E9] dark:border-[#2E2F38] hover:border-[#9FE870]/40'
+          }`}>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider">
+                  03 · General Ledger
+                </span>
+                <div className="flex items-center gap-2">
+                  {data.delay_point === 'LEDGER' && (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F0B84B]/15 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/30">
+                      Bottleneck
+                    </span>
+                  )}
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    data.ledger.status === 'POSTED' ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20' :
+                    data.ledger.status === 'PENDING' ? 'bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/20' :
+                    'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/20'
+                  }`}>
+                    {data.ledger.found ? data.ledger.status : 'NOT_POSTED'}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] block mb-1">Journal Posted Value</span>
+                <div className="text-[28px] sm:text-[34px] font-bold text-[#14151A] dark:text-[#EDEDF0] tabular-nums tracking-tight">
+                  {data.ledger.currency === 'USD' ? '$' : '₹'}{data.ledger.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 }) || '0.00'}
+                </div>
+                <p className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] mt-1">
+                  Double-Entry Journal Post
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-[#E8EAEF] dark:border-[#2E2F38] flex justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+              <span>Posted At:</span>
+              <span className="text-[#14151A] dark:text-[#EDEDF0] font-mono font-medium">{data.ledger.posted_at || 'Pending'}</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* ── 4. EXCEPTIONS CALLOUT (WHEN ANOMALY DETECTED) ──────────────────── */}
       {hasExceptions && (
-        <div className="w-full bg-[#FFF5F5] dark:bg-[#201010] rounded-3xl p-6 sm:p-7 border border-[#FCA5A5] dark:border-[#521E1E] flex flex-col gap-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[22px]">gpp_maybe</span>
+        <div className="w-full bg-[#FFF5F5] dark:bg-[#201517] rounded-3xl p-7 sm:p-8 border border-[#F1483F]/30 flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#F1483F]/15 text-[#F1483F] flex items-center justify-center">
+                <span className="material-symbols-outlined text-[20px]">warning</span>
               </div>
-              <h3 className="font-bold text-[#9E1B1B] dark:text-[#FF8A8A] text-[18px]">
-                Deterministic Rule Exceptions Flagged ({data.exceptions.length})
-              </h3>
+              <div>
+                <h3 className="font-bold text-[#9E1B1B] dark:text-[#F1483F] text-lg">
+                  Deterministic Exceptions Flagged ({data.exceptions.length})
+                </h3>
+                <p className="text-xs text-[#9E1B1B]/80 dark:text-[#F1483F]/80">
+                  Automated checks detected non-standard ledger patterns
+                </p>
+              </div>
             </div>
-            <span className="text-xs font-mono font-bold text-[#9E1B1B] dark:text-[#FF8A8A] bg-red-500/10 px-3.5 py-1 rounded-full border border-red-500/20">
-              Requires Operational Review
+            <span className="text-xs font-semibold text-[#9E1B1B] dark:text-[#F1483F] bg-[#F1483F]/10 px-3.5 py-1.5 rounded-full border border-[#F1483F]/20 self-start sm:self-auto">
+              Reconciliation Alert
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {data.exceptions.map((exc, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-white dark:bg-[#2B1515] border border-red-500/20 font-mono text-xs flex items-start gap-2.5 text-[#9E1B1B] dark:text-[#FF8A8A] shadow-sm">
-                <span className="material-symbols-outlined text-[18px] text-red-500 mt-0.5 shrink-0">error</span>
-                <span className="font-semibold">{exc}</span>
+              <div key={idx} className="p-4 rounded-2xl bg-white dark:bg-[#1E1F26] border border-[#F1483F]/20 text-xs flex items-start gap-3 text-[#9E1B1B] dark:text-[#F1483F]">
+                <span className="material-symbols-outlined text-[18px] text-[#F1483F] mt-0.5 shrink-0">error</span>
+                <span className="font-medium">{exc}</span>
               </div>
             ))}
           </div>
 
           {/* Amount / Currency discrepancy breakdown if present */}
           {data.gateway.amount !== data.bank.amount && data.gateway.found && data.bank.found && (
-            <div className="p-4 rounded-2xl bg-white dark:bg-[#251212] border border-red-500/20 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono shadow-sm">
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#1E1F26] border border-[#F1483F]/25 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Gateway Captured:</span>
-                <div className="text-base font-bold text-[#163300] dark:text-white">
+                <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider">Gateway Capture</span>
+                <div className="text-base font-bold text-[#14151A] dark:text-[#EDEDF0] tabular-nums font-mono">
                   {data.gateway.currency} {data.gateway.amount}
                 </div>
               </div>
-              <div className="text-red-600 font-bold px-3 py-1 rounded-full bg-red-500/10 text-xs">
-                ≠ Mismatch ≠
-              </div>
+              <span className="text-xs font-bold text-[#F1483F] px-3 py-1 rounded-full bg-[#F1483F]/10 border border-[#F1483F]/20">
+                Mismatch Variance
+              </span>
               <div>
-                <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Bank Credited:</span>
-                <div className="text-base font-bold text-red-600 dark:text-red-400">
+                <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider">Bank Credit</span>
+                <div className="text-base font-bold text-[#F1483F] tabular-nums font-mono">
                   {data.bank.currency} {data.bank.amount}
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[11px] text-[#596859] dark:text-[#9DA99D]">Variance Delta:</span>
-                <div className="text-base font-bold text-red-600 dark:text-red-400">
+                <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider">Delta Variance</span>
+                <div className="text-base font-bold text-[#F1483F] tabular-nums font-mono">
                   {((data.gateway.amount || 0) - (data.bank.amount || 0)) > 0 ? '-' : '+'}
                   {data.gateway.currency} {Math.abs((data.gateway.amount || 0) - (data.bank.amount || 0)).toFixed(2)}
                 </div>
@@ -529,47 +574,47 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
         </div>
       )}
 
-      {/* ── 5. GEMINI AI INVESTIGATION & AUDIT EVIDENCE BREAKDOWN ──────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Gemini AI Natural Language Reasoning Panel */}
-        <div className="bg-white dark:bg-[#131A13] rounded-3xl p-6 sm:p-7 shadow-sm border border-[#E2E5E9] dark:border-[#273827] flex flex-col justify-between gap-4">
-          <div className="flex flex-col gap-4">
+      {/* ── 5. GEMINI AI INVESTIGATION & AUDIT EVIDENCE (CLEAN READABLE CARDS) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Gemini AI Natural Language Reasoning Panel (Readable Body, NOT Code/Monospace) */}
+        <div className="bg-white dark:bg-[#1E1F26] rounded-3xl p-7 sm:p-8 border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col justify-between gap-6">
+          <div className="flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#9FE870] text-[#163300] flex items-center justify-center font-bold shadow-sm">
-                  <span className="material-symbols-outlined text-[20px]">neurology</span>
+                <div className="w-10 h-10 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center font-bold">
+                  <span className="material-symbols-outlined text-[20px]">psychology</span>
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-[#163300] dark:text-white text-[18px]">
-                    AI Analysis
+                  <h3 className="font-bold text-[#14151A] dark:text-[#EDEDF0] text-lg">
+                    AI Investigation Analysis
                   </h3>
-                  <div className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
-                    Multi-Rail Transfer Breakdown
+                  <div className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+                    Natural language multi-rail synthesis
                   </div>
                 </div>
               </div>
-              <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#EBF8E3] text-[#163300] border border-[#9FE870] dark:bg-[#1A2B1A] dark:text-[#9FE870] dark:border-[#9FE870]/30">
-                Verified Facts
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20">
+                Zero Hallucination
               </span>
             </div>
 
             {loadingExplanation ? (
-              <div className="py-10 flex flex-col items-center justify-center gap-3">
-                <div className="w-8 h-8 rounded-full border-3 border-[#9FE870] border-t-[#163300] dark:border-t-white animate-spin" />
-                <span className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
-                  Synthesizing multi-rail evidence...
+              <div className="py-12 flex flex-col items-center justify-center gap-3">
+                <div className="w-8 h-8 rounded-full border-2 border-[#9FE870] border-t-transparent animate-spin" />
+                <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+                  Synthesizing multi-rail audit logs...
                 </span>
               </div>
             ) : (
-              <div className="p-5 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] text-xs sm:text-sm text-[#163300] dark:text-slate-200 font-mono whitespace-pre-line leading-relaxed">
+              <div className="p-6 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] text-[14px] sm:text-[15px] leading-relaxed text-[#14151A] dark:text-[#EDEDF0] font-sans whitespace-pre-line">
                 {explanation || 'No explanation generated yet.'}
               </div>
             )}
           </div>
 
-          <div className="pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
+          <div className="pt-4 border-t border-[#E8EAEF] dark:border-[#2E2F38] flex items-center justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
             <span>Engine: PayTrace AI</span>
-            <span className="text-[#2D5A0F] dark:text-[#9FE870] font-bold flex items-center gap-1.5">
+            <span className="text-[#2D5A0F] dark:text-[#9FE870] font-semibold flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[16px]">verified</span>
               Fact-Checked
             </span>
@@ -577,42 +622,47 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
         </div>
 
         {/* Deterministic Evidence Breakdown */}
-        <div className="bg-white dark:bg-[#131A13] rounded-3xl p-6 sm:p-7 shadow-sm border border-[#E2E5E9] dark:border-[#273827] flex flex-col justify-between gap-4">
-          <div className="flex flex-col gap-4">
+        <div className="bg-white dark:bg-[#1E1F26] rounded-3xl p-7 sm:p-8 border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col justify-between gap-6">
+          <div className="flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#163300] text-[#9FE870] dark:bg-[#1A261A] dark:text-[#9FE870] flex items-center justify-center font-bold shadow-sm">
-                  <span className="material-symbols-outlined text-[20px]">database</span>
+                <div className="w-10 h-10 rounded-full bg-[#F4F5F7] dark:bg-[#26272E] text-[#14151A] dark:text-[#EDEDF0] flex items-center justify-center font-bold">
+                  <span className="material-symbols-outlined text-[20px]">fact_check</span>
                 </div>
-                <h3 className="font-extrabold text-[#163300] dark:text-white text-[18px]">
-                  Verified Evidence Trail
-                </h3>
+                <div>
+                  <h3 className="font-bold text-[#14151A] dark:text-[#EDEDF0] text-lg">
+                    Verified Evidence Trail
+                  </h3>
+                  <div className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+                    Deterministic facts extracted from audit logs
+                  </div>
+                </div>
               </div>
-              <span className="text-xs font-mono font-bold text-[#596859] dark:text-[#9DA99D] px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827]">
-                {data.evidence.length} Fact Points
+              <span className="text-xs font-semibold text-[#6C6D77] dark:text-[#9B9CA6] px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38]">
+                {data.evidence.length} Evidence Points
               </span>
             </div>
 
             <div className="flex flex-col gap-2.5">
               {data.evidence.map((ev, i) => (
-                <div key={i} className="p-3.5 rounded-2xl bg-[#F4F5F7] dark:bg-[#1A261A] border border-[#E2E5E9] dark:border-[#273827] flex items-start gap-3 text-xs sm:text-sm text-[#163300] dark:text-slate-200">
+                <div key={i} className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex items-start gap-3 text-xs sm:text-sm text-[#14151A] dark:text-[#EDEDF0]">
                   <span className="material-symbols-outlined text-[18px] text-[#2D5A0F] dark:text-[#9FE870] mt-0.5 shrink-0">check_circle</span>
-                  <span>{ev}</span>
+                  <span className="leading-relaxed">{ev}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#E2E5E9] dark:border-[#273827] flex items-center justify-between text-xs font-mono text-[#596859] dark:text-[#9DA99D]">
-            <span>Audit Engine: Deterministic Rules v4.2</span>
-            <span>Dataset: PayTrace Live CSV</span>
+          <div className="pt-4 border-t border-[#E8EAEF] dark:border-[#2E2F38] flex items-center justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+            <span>Deterministic Rules v4.2</span>
+            <span>Dataset: Verified CSV Feeds</span>
           </div>
         </div>
       </div>
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-8 right-8 z-50 flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-[#163300] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#163300] shadow-2xl border border-[#9FE870]/30 font-mono text-xs sm:text-sm font-bold transition-all animate-bounce">
+        <div className="fixed bottom-8 right-8 z-50 flex items-center gap-3 px-6 py-3.5 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] border border-[#9FE870]/30 text-xs sm:text-sm font-semibold transition-all">
           <span className="material-symbols-outlined text-[20px]">check_circle</span>
           <span>{toastMessage}</span>
         </div>

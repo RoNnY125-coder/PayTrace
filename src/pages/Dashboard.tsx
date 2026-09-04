@@ -129,38 +129,38 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
   };
 
   return (
-    <div className="flex flex-col w-full px-gutter py-6 gap-6 max-w-7xl mx-auto pb-24">
-      {/* ── HEADER & DATE SELECTOR (WISE STYLE) ────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="flex flex-col w-full px-6 sm:px-8 py-8 gap-10 max-w-7xl mx-auto pb-28">
+      {/* ── HEADER & DATE SELECTOR (CONFIDENT WHITESPACE) ──────────────────── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-3 py-1 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] text-[#163300] dark:text-[#9FE870] text-xs font-mono font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="px-3 py-1 rounded-full bg-[#9FE870]/10 text-[#2D5A0F] dark:text-[#9FE870] text-xs font-semibold uppercase tracking-wider border border-[#9FE870]/20">
               CSV Ledger Ingestion
             </span>
-            <span className="text-xs text-[#596859] dark:text-[#9DA99D] font-mono">
+            <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
               {allTransactions.length} Verified Records
             </span>
           </div>
-          <h1 className="text-[#163300] dark:text-white font-extrabold text-[30px] sm:text-[36px] tracking-tight">
+          <h1 className="text-[#14151A] dark:text-[#EDEDF0] font-bold text-[30px] sm:text-[36px] tracking-tight">
             Settlement Overview &amp; Ledger Audit
           </h1>
-          <p className="text-sm text-[#596859] dark:text-[#9DA99D]">
+          <p className="text-sm sm:text-base text-[#6C6D77] dark:text-[#9B9CA6] mt-1 max-w-2xl">
             Real-time reconciliation status across Gateway, Core Banking, and General Ledger data.
           </p>
         </div>
 
         {/* Live Date Switcher & Export CSV Pills */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-white dark:bg-[#131A13] px-4 py-2 rounded-full border border-[#E2E5E9] dark:border-[#273827] shadow-sm">
-            <span className="material-symbols-outlined text-[#2D5A0F] dark:text-[#9FE870] text-[18px]">calendar_today</span>
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 bg-white dark:bg-[#1E1F26] px-4 py-2.5 rounded-full border border-[#E2E5E9] dark:border-[#2E2F38]">
+            <span className="material-symbols-outlined text-[#6C6D77] dark:text-[#9B9CA6] text-[18px]">calendar_today</span>
             <select
               value={selectedDate}
               onChange={(e) => { setSelectedDate(e.target.value); setPage(1); }}
-              className="bg-transparent text-xs font-mono font-bold text-[#163300] dark:text-white focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-medium text-[#14151A] dark:text-[#EDEDF0] focus:outline-none cursor-pointer"
             >
-              <option value="ALL" className="dark:bg-[#131A13]">All Batches ({allTransactions.length} txns)</option>
+              <option value="ALL" className="dark:bg-[#1E1F26]">All Batches ({allTransactions.length} txns)</option>
               {meta.dates.map(d => (
-                <option key={d} value={d} className="dark:bg-[#131A13]">
+                <option key={d} value={d} className="dark:bg-[#1E1F26]">
                   Batch {d}
                 </option>
               ))}
@@ -168,7 +168,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
           </div>
 
           <button 
-            className="flex items-center gap-2 bg-[#163300] text-[#9FE870] hover:bg-[#244D00] dark:bg-[#9FE870] dark:text-[#163300] dark:hover:bg-[#B5F58D] px-5 py-2.5 rounded-full text-xs font-bold transition-all shadow-sm active:scale-95 shrink-0" 
+            className="flex items-center gap-2 bg-[#14151A] text-[#9FE870] hover:bg-[#26272E] dark:bg-[#9FE870] dark:text-[#14151A] dark:hover:bg-[#B5F58D] px-5 py-2.5 rounded-full text-xs font-semibold transition-colors shrink-0" 
             onClick={handleExportCSV}
             title={`Export ${filtered.length} transactions as CSV`}
           >
@@ -178,104 +178,104 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
         </div>
       </div>
 
-      {/* ── 4 STAT CARDS IN WISE ROUNDED-3XL CONTAINERS ─────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ── 4 STAT CARDS (CLEAR SINGLE-FOCAL-POINT NUMBER & GENEROUS PADDING) ─ */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Volume */}
-        <div className="bg-white dark:bg-[#131A13] p-6 rounded-3xl border border-[#E2E5E9] dark:border-[#273827] shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-8 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col justify-between min-h-[175px]">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider font-mono font-bold">
-                {selectedDate === 'ALL' ? 'All Batches Volume' : `Batch ${selectedDate}`}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider font-semibold">
+                {selectedDate === 'ALL' ? 'Total Volume' : `Batch ${selectedDate}`}
               </span>
-              <div className="w-8 h-8 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] text-[#163300] dark:text-[#9FE870] flex items-center justify-center">
-                <span className="material-symbols-outlined text-[17px]">payments</span>
+              <div className="w-9 h-9 rounded-full bg-[#F4F5F7] dark:bg-[#26272E] text-[#14151A] dark:text-[#EDEDF0] flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px]">payments</span>
               </div>
             </div>
-            <div className="font-mono font-extrabold text-[#163300] dark:text-white tracking-tight text-[26px]">
+            <div className="font-bold text-[#14151A] dark:text-[#EDEDF0] tracking-tight text-[30px] sm:text-[34px]">
               ₹{stats.vol.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F0F2F5] dark:border-[#243324] flex justify-between text-xs text-[#596859] dark:text-[#9DA99D]">
+          <div className="mt-4 pt-3 border-t border-[#E8EAEF] dark:border-[#26272E] flex justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
             <span>Total Cases</span>
-            <span className="font-mono font-bold text-[#163300] dark:text-white">{stats.total}</span>
+            <span className="font-medium text-[#14151A] dark:text-[#EDEDF0]">{stats.total}</span>
           </div>
         </div>
 
         {/* Settled Clean */}
-        <div className="bg-white dark:bg-[#131A13] p-6 rounded-3xl border border-[#E2E5E9] dark:border-[#273827] shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-8 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col justify-between min-h-[175px]">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider font-mono font-bold">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider font-semibold">
                 Settled Clean
               </span>
-              <div className="w-8 h-8 rounded-full bg-[#9FE870] text-[#163300] flex items-center justify-center">
-                <span className="material-symbols-outlined text-[17px]">check_circle</span>
+              <div className="w-9 h-9 rounded-full bg-[#9FE870]/15 text-[#2D5A0F] dark:text-[#9FE870] flex items-center justify-center font-bold">
+                <span className="material-symbols-outlined text-[18px]">check_circle</span>
               </div>
             </div>
-            <div className="font-mono font-extrabold text-[#163300] dark:text-white tracking-tight text-[26px]">
+            <div className="font-bold text-[#14151A] dark:text-[#EDEDF0] tracking-tight text-[30px] sm:text-[34px]">
               {stats.settled}
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F0F2F5] dark:border-[#243324] flex justify-between text-xs text-[#596859] dark:text-[#9DA99D]">
+          <div className="mt-4 pt-3 border-t border-[#E8EAEF] dark:border-[#26272E] flex justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
             <span>Resolution Rate</span>
-            <span className="font-mono font-bold text-[#163300] dark:text-[#9FE870]">
+            <span className="font-semibold text-[#2D5A0F] dark:text-[#9FE870]">
               {stats.total > 0 ? ((stats.settled / stats.total) * 100).toFixed(1) : 0}%
             </span>
           </div>
         </div>
 
         {/* Delayed In-Flight */}
-        <div className="bg-white dark:bg-[#131A13] p-6 rounded-3xl border border-[#E2E5E9] dark:border-[#273827] shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-8 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col justify-between min-h-[175px]">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider font-mono font-bold">
-                Delayed / In-Flight
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider font-semibold">
+                Delayed / Pending
               </span>
-              <div className="w-8 h-8 rounded-full bg-[#FEF3C7] text-[#B45309] flex items-center justify-center">
-                <span className="material-symbols-outlined text-[17px]">schedule</span>
+              <div className="w-9 h-9 rounded-full bg-[#F0B84B]/15 text-[#875800] dark:text-[#F0B84B] flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px]">schedule</span>
               </div>
             </div>
-            <div className="font-mono font-extrabold text-[#B45309] dark:text-[#FBBF24] tracking-tight text-[26px]">
+            <div className="font-bold text-[#F0B84B] tracking-tight text-[30px] sm:text-[34px]">
               {stats.delayed}
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F0F2F5] dark:border-[#243324] flex justify-between text-xs text-[#596859] dark:text-[#9DA99D]">
+          <div className="mt-4 pt-3 border-t border-[#E8EAEF] dark:border-[#26272E] flex justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
             <span>Bank &amp; Ledger Holds</span>
-            <span className="font-mono font-bold text-[#B45309] dark:text-[#FBBF24]">Monitor Hold</span>
+            <span className="font-medium text-[#F0B84B]">In-Flight</span>
           </div>
         </div>
 
-        {/* Exceptions & Discrepancies */}
-        <div className="bg-white dark:bg-[#131A13] p-6 rounded-3xl border border-[#E2E5E9] dark:border-[#273827] shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        {/* Exceptions & Variances */}
+        <div className="bg-white dark:bg-[#1E1F26] p-7 sm:p-8 rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col justify-between min-h-[175px]">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-[#596859] dark:text-[#9DA99D] uppercase tracking-wider font-mono font-bold">
-                Exceptions &amp; Variances
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] uppercase tracking-wider font-semibold">
+                Exceptions
               </span>
-              <div className="w-8 h-8 rounded-full bg-[#FEE2E2] text-[#B91C1C] flex items-center justify-center">
-                <span className="material-symbols-outlined text-[17px]">warning</span>
+              <div className="w-9 h-9 rounded-full bg-[#F1483F]/15 text-[#F1483F] flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px]">warning</span>
               </div>
             </div>
-            <div className="font-mono font-extrabold text-[#B91C1C] dark:text-[#F87171] tracking-tight text-[26px]">
+            <div className="font-bold text-[#F1483F] tracking-tight text-[30px] sm:text-[34px]">
               {stats.exceptions + stats.failed}
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F0F2F5] dark:border-[#243324] flex justify-between text-xs text-[#596859] dark:text-[#9DA99D]">
-            <span>Amount &amp; Currency Discrepancies</span>
-            <span className="font-mono font-bold text-[#B91C1C] dark:text-[#F87171]">Flagged</span>
+          <div className="mt-4 pt-3 border-t border-[#E8EAEF] dark:border-[#26272E] flex justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+            <span>Discrepancies</span>
+            <span className="font-medium text-[#F1483F]">Flagged</span>
           </div>
         </div>
       </div>
 
-      {/* ── TRANSACTION LEDGER TABLE IN WISE CONTAINER ─────────────────────── */}
-      <div className="bg-white dark:bg-[#131A13] rounded-3xl shadow-sm border border-[#E2E5E9] dark:border-[#273827] p-6 sm:p-7 flex flex-col gap-5">
+      {/* ── TRANSACTION LEDGER CARD (DESKTOP TABLE + MOBILE CARD LIST) ──────── */}
+      <div className="bg-white dark:bg-[#1E1F26] rounded-3xl border border-[#E2E5E9] dark:border-[#2E2F38] p-7 sm:p-8 flex flex-col gap-6">
         {/* Table Filters Header with Wise Pill Tabs */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-[#F0F2F5] dark:border-[#243324]">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-5 border-b border-[#E8EAEF] dark:border-[#26272E]">
           <div className="flex items-center gap-3">
-            <h2 className="text-[20px] font-extrabold text-[#163300] dark:text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-semibold text-[#14151A] dark:text-[#EDEDF0] tracking-tight">
               Settlement Ledger Stream
             </h2>
-            <span className="px-3 py-1 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] text-[#163300] dark:text-[#9FE870] text-xs font-mono font-bold">
+            <span className="px-3 py-1 rounded-full bg-[#F4F5F7] dark:bg-[#26272E] text-[#6C6D77] dark:text-[#9B9CA6] text-xs font-semibold border border-[#E2E5E9] dark:border-[#2E2F38]">
               {filtered.length} matches
             </span>
           </div>
@@ -283,9 +283,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
           <div className="flex flex-wrap items-center gap-3">
             {/* Search Pill */}
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none material-symbols-outlined text-[#596859] dark:text-[#9DA99D] text-[18px]">search</span>
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none material-symbols-outlined text-[#6C6D77] dark:text-[#9B9CA6] text-[18px]">search</span>
               <input 
-                className="bg-[#F4F5F7] dark:bg-[#182218] text-[#163300] dark:text-white placeholder:text-[#8D9B8D] dark:placeholder:text-[#647464] text-xs pl-10 pr-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-[#9FE870] w-64 border border-[#DFE2E6] dark:border-[#243324] font-mono" 
+                className="bg-[#F4F5F7] dark:bg-[#14151A] text-[#14151A] dark:text-[#EDEDF0] placeholder:text-[#9B9CA6] dark:placeholder:text-[#6C6D77] text-xs pl-10 pr-4 py-2.5 rounded-full focus:outline-none focus:ring-1 focus:ring-[#9FE870] w-64 border border-[#DFE2E6] dark:border-[#2E2F38]" 
                 placeholder="Filter ID, status, amount..." 
                 type="text"
                 value={searchTerm}
@@ -294,15 +294,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
             </div>
 
             {/* Filter Tabs as Wise Segmented Control Pill */}
-            <div className="flex items-center gap-1 bg-[#E8EAEF] dark:bg-[#1A241A] p-1 rounded-full border border-[#DFE2E6] dark:border-[#243324]">
+            <div className="flex items-center gap-1 bg-[#E8EAEF] dark:bg-[#14151A] p-1 rounded-full border border-[#DFE2E6] dark:border-[#2E2F38]">
               {(['All', 'Settled', 'Delayed', 'Exceptions', 'Failed'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => { setFilterTab(tab); setPage(1); }}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                     filterTab === tab
-                      ? 'bg-[#163300] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#163300] shadow-sm'
-                      : 'text-[#596859] dark:text-[#9DA99D] hover:text-[#163300] dark:hover:text-white'
+                      ? 'bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A]'
+                      : 'text-[#6C6D77] dark:text-[#9B9CA6] hover:text-[#14151A] dark:hover:text-[#EDEDF0]'
                   }`}
                 >
                   {tab}
@@ -312,21 +312,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
           </div>
         </div>
 
-        {/* Real Transactions Grid */}
-        <div className="overflow-x-auto">
+        {/* Desktop Table View (Hidden on mobile) with Increased Row Padding */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="text-[#596859] dark:text-[#9DA99D] text-xs uppercase font-mono font-bold border-b border-[#F0F2F5] dark:border-[#243324]">
-                <th className="py-3.5 px-3">Transaction ID</th>
-                <th className="py-3.5 px-3">Status</th>
-                <th className="py-3.5 px-3">Gateway Node</th>
-                <th className="py-3.5 px-3">Bank Partner</th>
-                <th className="py-3.5 px-3">General Ledger</th>
-                <th className="py-3.5 px-3 text-right">Amount</th>
-                <th className="py-3.5 px-3 text-right">Action</th>
+              <tr className="text-[#6C6D77] dark:text-[#9B9CA6] text-xs uppercase tracking-wider font-semibold border-b border-[#E8EAEF] dark:border-[#26272E]">
+                <th className="py-4 px-4">Transaction ID</th>
+                <th className="py-4 px-4">Status</th>
+                <th className="py-4 px-4">Gateway</th>
+                <th className="py-4 px-4">Bank</th>
+                <th className="py-4 px-4">Ledger</th>
+                <th className="py-4 px-4 text-right">Amount</th>
+                <th className="py-4 px-4 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F2F5] dark:divide-[#1F2B1F] text-xs">
+            <tbody className="divide-y divide-[#E8EAEF] dark:divide-[#26272E] text-xs">
               {paginated.map((row) => {
                 const isSettled = row.overall_status === 'SETTLED';
                 const isDelayed = row.overall_status === 'DELAYED' || row.overall_status === 'LEDGER_DELAY';
@@ -335,85 +335,84 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
                 return (
                   <tr 
                     key={row.transaction_id}
-                    className="group cursor-pointer transition-all hover:bg-[#EBF8E3]/60 dark:hover:bg-[#1D291D]/60"
+                    className="group cursor-pointer transition-colors hover:bg-[#F4F5F7] dark:hover:bg-[#26272E]"
                     onClick={() => handleRowClick(row.transaction_id)}
                   >
                     {/* ID */}
-                    <td className="py-3.5 px-3 font-mono font-bold text-[#163300] dark:text-white group-hover:text-[#2D5A0F] dark:group-hover:text-[#9FE870] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[16px] opacity-60">receipt</span>
-                      <span>{row.transaction_id}</span>
+                    <td className="py-4 px-4 font-semibold text-[#14151A] dark:text-[#EDEDF0]">
+                      <span className="tabular-nums font-mono">{row.transaction_id}</span>
                     </td>
 
                     {/* Overall Status in Wise Pill */}
-                    <td className="py-3.5 px-3">
-                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-mono font-bold ${
-                        isSettled ? 'bg-[#9FE870] text-[#163300]' :
-                        isDelayed ? 'bg-[#FEF3C7] text-[#B45309]' :
-                        isException ? 'bg-[#FEE2E2] text-[#B91C1C]' :
-                        'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+                    <td className="py-4 px-4">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                        isSettled ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20' :
+                        isDelayed ? 'bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/20' :
+                        isException ? 'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/20' :
+                        'bg-[#E8EAEF] dark:bg-[#26272E] text-[#6C6D77] dark:text-[#9B9CA6] border border-[#DFE2E6] dark:border-[#2E2F38]'
                       }`}>
                         {isSettled ? 'Settled' : row.overall_status}
                       </span>
                     </td>
 
                     {/* Gateway */}
-                    <td className="py-3.5 px-3 font-mono text-xs text-[#596859] dark:text-[#9DA99D]">
+                    <td className="py-4 px-4 text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
                       {row.gateway.found ? (
                         <div>
-                          <span className="font-bold text-[#163300] dark:text-white">{row.gateway.status}</span>
-                          <div className="text-[10px] opacity-70">{row.gateway.timestamp?.split(' ')[1] || 'Captured'}</div>
+                          <span className="font-medium text-[#14151A] dark:text-[#EDEDF0]">{row.gateway.status}</span>
+                          <div className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6]">{row.gateway.timestamp?.split(' ')[1] || 'Captured'}</div>
                         </div>
                       ) : (
-                        <span className="text-red-500 font-bold">MISSING</span>
+                        <span className="text-[#E8615C] font-semibold">MISSING</span>
                       )}
                     </td>
 
                     {/* Bank */}
-                    <td className="py-3.5 px-3 font-mono text-xs text-[#596859] dark:text-[#9DA99D]">
+                    <td className="py-4 px-4 text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
                       {row.bank.found ? (
                         <div>
-                          <span className={`font-bold ${
-                            row.bank.status === 'SETTLED' ? 'text-[#163300] dark:text-[#9FE870]' :
-                            row.bank.status === 'PENDING' ? 'text-[#B45309] dark:text-[#FBBF24]' : 'text-red-500'
+                          <span className={`font-medium ${
+                            row.bank.status === 'SETTLED' ? 'text-[#2D5A0F] dark:text-[#9FE870]' :
+                            row.bank.status === 'PENDING' ? 'text-[#F0B84B]' : 'text-[#E8615C]'
                           }`}>
                             {row.bank.status}
                           </span>
-                          <div className="text-[10px] opacity-70">{row.bank.currency} {row.bank.amount}</div>
+                          <div className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6]">{row.bank.currency} {row.bank.amount}</div>
                         </div>
                       ) : (
-                        <span className="text-[#B45309] font-bold">NOT RECEIVED</span>
+                        <span className="text-[#F0B84B] font-medium">NOT RECEIVED</span>
                       )}
                     </td>
 
                     {/* Ledger */}
-                    <td className="py-3.5 px-3 font-mono text-xs text-[#596859] dark:text-[#9DA99D]">
+                    <td className="py-4 px-4 text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
                       {row.ledger.found ? (
                         <div>
-                          <span className={`font-bold ${
-                            row.ledger.status === 'POSTED' ? 'text-[#163300] dark:text-[#9FE870]' :
-                            row.ledger.status === 'PENDING' ? 'text-[#B45309] dark:text-[#FBBF24]' : 'text-red-500'
+                          <span className={`font-medium ${
+                            row.ledger.status === 'POSTED' ? 'text-[#2D5A0F] dark:text-[#9FE870]' :
+                            row.ledger.status === 'PENDING' ? 'text-[#F0B84B]' : 'text-[#E8615C]'
                           }`}>
                             {row.ledger.status}
                           </span>
-                          <div className="text-[10px] opacity-70">{row.ledger.currency} {row.ledger.amount}</div>
+                          <div className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6]">{row.ledger.currency} {row.ledger.amount}</div>
                         </div>
                       ) : (
-                        <span className="text-[#B45309] font-bold">PENDING</span>
+                        <span className="text-[#F0B84B] font-medium">PENDING</span>
                       )}
                     </td>
 
                     {/* Amount */}
-                    <td className="py-3.5 px-3 text-right font-mono font-bold text-[#163300] dark:text-white text-sm">
+                    <td className="py-4 px-4 text-right font-semibold text-[#14151A] dark:text-[#EDEDF0] text-sm tabular-nums">
                       {row.currency === 'USD' ? '$' : '₹'}{row.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
 
                     {/* Action Button as Wise Pill */}
-                    <td className="py-3.5 px-3 text-right">
+                    <td className="py-4 px-4 text-right">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleRowClick(row.transaction_id); }}
-                        className="px-3 py-1 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] hover:bg-[#9FE870] hover:text-[#163300] dark:hover:bg-[#9FE870] dark:hover:text-[#163300] text-[#163300] dark:text-[#9FE870] font-bold text-xs transition-all shadow-sm active:scale-95"
+                        className="px-3.5 py-1.5 rounded-full bg-[#F4F5F7] dark:bg-[#26272E] hover:bg-[#E8EAEF] dark:hover:bg-[#2E2F38] text-[#14151A] dark:text-[#EDEDF0] font-semibold text-xs transition-colors border border-[#E2E5E9] dark:border-[#2E2F38]"
                       >
-                        Investigate →
+                        Inspect →
                       </button>
                     </td>
                   </tr>
@@ -423,26 +422,75 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActivePage, setSelected
           </table>
         </div>
 
+        {/* Mobile Card-List View (Shown only on small screens) */}
+        <div className="md:hidden flex flex-col gap-3">
+          {paginated.map((row) => {
+            const isSettled = row.overall_status === 'SETTLED';
+            const isDelayed = row.overall_status === 'DELAYED' || row.overall_status === 'LEDGER_DELAY';
+            const isException = ['CRITICAL_EXCEPTION', 'EXCEPTION', 'DATA_INCONSISTENCY', 'DUPLICATE_RECORD'].includes(row.overall_status);
+
+            return (
+              <div 
+                key={row.transaction_id}
+                onClick={() => handleRowClick(row.transaction_id)}
+                className="p-4 rounded-2xl bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex flex-col gap-3 cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold font-mono text-[#14151A] dark:text-[#EDEDF0]">{row.transaction_id}</span>
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    isSettled ? 'bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20' :
+                    isDelayed ? 'bg-[#F0B84B]/12 text-[#875800] dark:text-[#F0B84B] border border-[#F0B84B]/20' :
+                    isException ? 'bg-[#F1483F]/12 text-[#9E1B1B] dark:text-[#F1483F] border border-[#F1483F]/20' :
+                    'bg-[#E8EAEF] dark:bg-[#26272E] text-[#6C6D77] dark:text-[#9B9CA6]'
+                  }`}>
+                    {isSettled ? 'Settled' : row.overall_status}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs text-[#6C6D77] dark:text-[#9B9CA6] pt-1">
+                  <div>
+                    <span className="block text-[10px] uppercase">Gateway</span>
+                    <span className="font-medium text-[#14151A] dark:text-[#EDEDF0]">{row.gateway.status || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] uppercase">Bank</span>
+                    <span className="font-medium text-[#14151A] dark:text-[#EDEDF0]">{row.bank.status || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] uppercase">Ledger</span>
+                    <span className="font-medium text-[#14151A] dark:text-[#EDEDF0]">{row.ledger.status || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-2 border-t border-[#E8EAEF] dark:border-[#26272E]">
+                  <span className="text-sm font-semibold text-[#14151A] dark:text-[#EDEDF0] tabular-nums">
+                    {row.currency === 'USD' ? '$' : '₹'}{row.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </span>
+                  <span className="text-xs font-semibold text-[#2D5A0F] dark:text-[#9FE870]">Inspect Case →</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
         {/* Pagination Controls as Wise Pills */}
-        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[#F0F2F5] dark:border-[#243324] text-xs text-[#596859] dark:text-[#9DA99D] gap-3">
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-[#E8EAEF] dark:border-[#26272E] text-xs text-[#6C6D77] dark:text-[#9B9CA6] gap-4">
           <span>
             Showing {(page - 1) * pageSize + 1} to {Math.min(page * pageSize, filtered.length)} of {filtered.length} transactions
           </span>
-          <div className="flex items-center gap-2 font-mono font-bold">
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-1.5 rounded-full bg-[#E8EAEF] dark:bg-[#1A241A] text-[#163300] dark:text-white hover:bg-[#DFE2E6] dark:hover:bg-[#253325] transition-all disabled:opacity-40"
+              className="px-4 py-2 rounded-full bg-[#F4F5F7] dark:bg-[#26272E] text-[#14151A] dark:text-[#EDEDF0] hover:bg-[#E8EAEF] dark:hover:bg-[#2E2F38] transition-colors disabled:opacity-40 border border-[#E2E5E9] dark:border-[#2E2F38] font-medium"
             >
               Previous
             </button>
-            <span className="px-3 py-1 rounded-full bg-[#EBF8E3] dark:bg-[#1A2B1A] text-[#163300] dark:text-[#9FE870]">
+            <span className="px-3 py-1.5 rounded-full bg-[#F4F5F7] dark:bg-[#14151A] text-[#14151A] dark:text-[#EDEDF0] font-medium border border-[#E2E5E9] dark:border-[#2E2F38]">
               Page {page} of {totalPages}
             </span>
             <button 
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-4 py-1.5 rounded-full bg-[#163300] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#163300] hover:bg-[#244D00] dark:hover:bg-[#B5F58D] transition-all disabled:opacity-40 shadow-sm"
+              className="px-4 py-2 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] hover:bg-[#26272E] dark:hover:bg-[#B5F58D] transition-colors disabled:opacity-40 font-semibold"
             >
               Next
             </button>

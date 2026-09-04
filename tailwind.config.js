@@ -8,87 +8,85 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Wise Design System Palette
-        wise: {
-          bright: "#9FE870",       // Iconic Wise neon lime
-          brightHover: "#B5F58D",
-          forest: "#163300",       // Deep Wise forest green
-          forestHover: "#234D00",
-          forestSubtle: "#EBF8E3",
-          darkBg: "#0C110C",       // Wise deep charcoal/forest dark mode
-          darkSurface: "#131A13",  // Dark card background
-          darkCard: "#182218",     // Dark elevated container
-          darkBorder: "#273827",   // Dark border
-          lightBg: "#F4F5F7",      // Wise soft light canvas
-          lightCard: "#FFFFFF",
-          lightBorder: "#E2E5E9",
-          textDark: "#163300",     // High-contrast primary text
-          textMuted: "#596859",
+        // Dark mode warm grey surfaces (No pure black #000000)
+        canvas: {
+          DEFAULT: "#14151A",
+          card: "#1E1F26",
+          hover: "#26272E",
+          border: "#2E2F38",
         },
-        "primary": "#163300",
-        "on-primary": "#ffffff",
+        // Light mode surfaces
+        light: {
+          bg: "#F4F5F7",
+          card: "#FFFFFF",
+          hover: "#ECEEF1",
+          border: "#E2E5E9",
+        },
+        // Single bold accent
+        accent: {
+          DEFAULT: "#9FE870",
+          hover: "#B5F58D",
+          subtle: "rgba(159, 232, 112, 0.12)",
+          text: "#14151A",
+        },
+        // Status colors (small badges/icons only, never large fills)
+        status: {
+          settled: "#9FE870",
+          settledSubtle: "rgba(159, 232, 112, 0.12)",
+          delayed: "#F0B84B",
+          delayedSubtle: "rgba(240, 184, 75, 0.12)",
+          failed: "#E8615C",
+          failedSubtle: "rgba(232, 97, 92, 0.12)",
+          critical: "#F1483F",
+          criticalSubtle: "rgba(241, 72, 63, 0.15)",
+        },
+        // Text tokens
+        content: {
+          primary: "#EDEDF0",      // soft off-white
+          secondary: "#9B9CA6",    // mid-grey muted
+          darkPrimary: "#14151A",  // light mode primary
+          darkSecondary: "#6C6D77",// light mode secondary
+        },
+
+        // Backward compatibility mappings
+        "primary": "#14151A",
+        "on-primary": "#EDEDF0",
         "primary-container": "#9FE870",
-        "on-primary-container": "#163300",
-        "inverse-primary": "#9FE870",
-        "secondary": "#2D5A0F",
-        "on-secondary": "#ffffff",
-        "secondary-container": "#EBF8E3",
-        "on-secondary-container": "#163300",
+        "on-primary-container": "#14151A",
         "surface": "#F4F5F7",
-        "on-surface": "#163300",
-        "surface-container-lowest": "#ffffff",
-        "surface-container-low": "#F4F5F7",
-        "surface-container": "#ECEEF1",
-        "surface-container-high": "#E5E8EB",
-        "dark-bg": "#0C110C",
-        "dark-surface": "#131A13",
-        "dark-surface-card": "rgba(19, 26, 19, 0.75)",
+        "on-surface": "#14151A",
+        "dark-bg": "#14151A",
+        "dark-surface": "#1E1F26",
+        "dark-surface-card": "#1E1F26",
       },
       borderRadius: {
-        "DEFAULT": "0.25rem",
-        "lg": "0.5rem",
-        "xl": "0.75rem",
-        "2xl": "1rem",
+        "DEFAULT": "0.5rem",
+        "lg": "0.75rem",
+        "xl": "1rem",
+        "2xl": "1.25rem",
+        "3xl": "1.5rem",
         "full": "9999px"
       },
       spacing: {
-        "stack-xs": "4px",
-        "stack-sm": "8px",
-        "stack-md": "16px",
-        "stack-lg": "24px",
-        "stack-xl": "32px",
-        "gutter": "24px",
-        "panel-padding": "24px",
-        "margin-screen": "32px"
+        "stack-xs": "8px",
+        "stack-sm": "16px",
+        "stack-md": "24px",
+        "stack-lg": "32px",
+        "stack-xl": "48px",
+        "stack-2xl": "64px",
+        "gutter": "32px",
+        "panel-padding": "32px",
       },
       fontFamily: {
         "sans": ["Inter", "system-ui", "sans-serif"],
-        "hero": ["Oswald", "Google Sans", "Raleway", "sans-serif"],
-        "oswald": ["Oswald", "sans-serif"],
-        "google-sans": ["'Google Sans'", "sans-serif"],
-        "raleway": ["Raleway", "sans-serif"],
-        "caacupe": ["'Caacupe One'", "cursive"],
-        "body-sm": ["Inter", "sans-serif"],
-        "body-md": ["Inter", "sans-serif"],
-        "body-lg": ["Inter", "sans-serif"],
-        "headline-md": ["Inter", "sans-serif"],
-        "headline-lg": ["Inter", "sans-serif"],
-        "headline-xl": ["Inter", "sans-serif"],
+        "hero": ["Oswald", "Inter", "sans-serif"],
         "mono": ["JetBrains Mono", "monospace"],
-        "label-sm": ["JetBrains Mono", "monospace"],
-        "label-md": ["JetBrains Mono", "monospace"],
-        "tabular-nums": ["JetBrains Mono", "monospace"]
       },
       fontSize: {
-        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
-        "body-md": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
-        "body-lg": ["15px", { "lineHeight": "22px", "fontWeight": "400" }],
-        "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
-        "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-        "headline-xl": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
-        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }],
-        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
-        "tabular-nums": ["13px", { "lineHeight": "18px", "letterSpacing": "0px", "fontWeight": "400" }]
+        "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+        "heading": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+        "body": ["15px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+        "caption": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500" }],
       }
     },
   },
