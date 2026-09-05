@@ -83,9 +83,11 @@ def _build_evidence_payload(result) -> str:
 
 # Candidate Gemini models with separate free quotas
 GEMINI_MODELS = [
-    "gemini-flash-latest",
-    "gemini-flash-lite-latest",
+    "gemini-3.5-flash-lite",
     "gemini-3.1-flash-lite-preview",
+    "gemini-flash-lite-latest",
+    "gemini-flash-latest",
+    "gemini-3.6-flash",
     "gemini-2.5-flash",
 ]
 
@@ -121,10 +123,10 @@ def explain_with_llm(result) -> str:
     """
     Send verified evidence to Gemini and return the explanation.
     Automatically cascades through models if a 429 quota limit is reached.
+    Uses official google-genai SDK, with graceful fallback.
     """
     api_key = os.getenv("LLM_API_KEY")
     if not api_key or api_key == "your_gemini_api_key_here":
-        # Check if Groq key exists
         groq_resp = _call_groq(_build_evidence_payload(result), _SYSTEM_PROMPT)
         if groq_resp:
             return groq_resp
@@ -133,8 +135,34 @@ def explain_with_llm(result) -> str:
     evidence_payload = _build_evidence_payload(result)
     user_message = f"Explain the following verified transaction evidence:\n\n{evidence_payload}"
 
-    # Try Gemini models with automatic 429 quota failover
+    # 1. Try modern google-genai SDK
     last_err = None
+    try:
+        from google import genai
+        from google.genai import types
+
+        client = genai.Client(api_key=api_key)
+        for model_name in GEMINI_MODELS:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=user_message,
+                    config=types.GenerateContentConfig(
+                        system_instruction=_SYSTEM_PROMPT,
+                        temperature=0.1,
+                    ),
+                )
+                if response and response.text:
+                    return response.text.strip()
+            except Exception as model_err:
+                last_err = model_err
+                continue
+    except ImportError:
+        pass
+    except Exception as exc:
+        last_err = exc
+
+    # 2. Try legacy google.generativeai if available
     try:
         import warnings
         with warnings.catch_warnings():
@@ -153,17 +181,11 @@ def explain_with_llm(result) -> str:
                         return response.text.strip()
                 except Exception as model_err:
                     last_err = model_err
-                    # If 429 ResourceExhausted or quota, continue to next model in cascade
-                    err_str = str(model_err).lower()
-                    if "429" in err_str or "quota" in err_str or "resourceexhausted" in err_str:
-                        continue
-                    # For other fatal errors, also try next model before giving up
                     continue
+    except Exception:
+        pass
 
-    except Exception as exc:
-        last_err = exc
-
-    # If Gemini models exhausted, try Groq fallback if configured
+    # 3. If Gemini models exhausted, try Groq fallback if configured
     groq_resp = _call_groq(user_message, _SYSTEM_PROMPT)
     if groq_resp:
         return groq_resp
@@ -263,7 +285,43 @@ def chat_with_llm(result, message: str, history: list[dict] | None = None) -> st
             return groq_resp
         return _fallback_chat(result, message)
 
+    # 1. Try modern google-genai SDK
     last_err = None
+    try:
+        from google import genai
+        from google.genai import types
+
+        client = genai.Client(api_key=api_key)
+        contents = []
+        if history:
+            for item in history:
+                role = "user" if item.get("role") == "user" else "model"
+                content = item.get("content", "").strip()
+                if content:
+                    contents.append(types.Content(role=role, parts=[types.Part.from_text(text=content)]))
+        contents.append(types.Content(role="user", parts=[types.Part.from_text(text=message)]))
+
+        for model_name in GEMINI_MODELS:
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_instruction,
+                        temperature=0.1,
+                    ),
+                )
+                if response and response.text:
+                    return response.text.strip()
+            except Exception as model_err:
+                last_err = model_err
+                continue
+    except ImportError:
+        pass
+    except Exception as exc:
+        last_err = exc
+
+    # 2. Try legacy google.generativeai if available
     try:
         import warnings
         with warnings.catch_warnings():
@@ -300,15 +358,11 @@ def chat_with_llm(result, message: str, history: list[dict] | None = None) -> st
                         return response.text.strip()
                 except Exception as model_err:
                     last_err = model_err
-                    err_str = str(model_err).lower()
-                    if "429" in err_str or "quota" in err_str or "resourceexhausted" in err_str:
-                        continue
                     continue
+    except Exception:
+        pass
 
-    except Exception as exc:
-        last_err = exc
-
-    # Try Groq fallback if Gemini models are exhausted
+    # 3. Try Groq fallback if Gemini models are exhausted
     groq_resp = _call_groq_chat(message, system_instruction, history)
     if groq_resp:
         return groq_resp
