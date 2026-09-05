@@ -155,3 +155,19 @@ export interface InvestigationData {
     actions: string[];
   };
 }
+
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatRequest {
+  transaction_id: string;
+  message: string;
+  history?: ChatMessage[];
+}
+
+export interface ChatResponse {
+  transaction_id: string;
+  reply: string;
+}

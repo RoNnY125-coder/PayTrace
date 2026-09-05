@@ -1,4 +1,4 @@
-import { InvestigationResult, DateSummary, ExplainResponse } from '../types';
+import { InvestigationResult, DateSummary, ExplainResponse, ChatMessage, ChatResponse } from '../types';
 import localDataset from '../data/transactionsData.json';
 
 const API_BASE = '/api';
@@ -143,4 +143,45 @@ export async function fetchDateSummary(date: string): Promise<DateSummary> {
     exceptions: counts.exceptions,
     transactions: dayTx.map(t => t.transaction_id),
   };
+}
+
+/**
+ * Chat with AI Copilot grounded in verified transaction evidence.
+ * Calls backend POST /api/chat with full conversational history support.
+ */
+export async function sendChatMessage(
+  transactionId: string,
+  message: string,
+  history: ChatMessage[] = []
+): Promise<string> {
+  const normId = transactionId.trim().toUpperCase();
+  try {
+    const res = await fetch(`${API_BASE}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transaction_id: normId,
+        message,
+        history,
+      }),
+    });
+    if (res.ok) {
+      const data: ChatResponse = await res.json();
+      if (data.reply) {
+        return data.reply;
+      }
+    }
+  } catch (err) {
+    console.warn(`[PayTrace API] Chat API call failed for ${normId}, using deterministic fallback.`, err);
+  }
+
+  // Deterministic local fallback
+  const tx = getLocalTransaction(normId);
+  if (tx) {
+    return `Deterministic mode: Transaction ${tx.transaction_id} is currently ${tx.overall_status}. ` +
+      `Verified action: ${tx.recommended_action || 'Review multi-rail telemetry.'}. ` +
+      `Exceptions: ${tx.exceptions.length > 0 ? tx.exceptions.join(', ') : 'None'}.`;
+  }
+
+  return `Deterministic mode: Case ${normId} record unavailable in active dataset.`;
 }

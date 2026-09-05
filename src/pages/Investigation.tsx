@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { NavPage, InvestigationResult } from '../types';
-import { fetchTransaction, fetchExplanation, getLocalTransaction } from '../services/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { NavPage, InvestigationResult, ChatMessage } from '../types';
+import { fetchTransaction, fetchExplanation, getLocalTransaction, sendChatMessage } from '../services/api';
 
 interface InvestigationProps {
   txId: string;
@@ -18,9 +18,82 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
   const [, setInputTx] = useState(currentTx);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // AI Copilot Chatbot State
+  const [isChatExpanded, setIsChatExpanded] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const chatBottomRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<HTMLInputElement>(null);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Prevent background scroll when chat is expanded
+  useEffect(() => {
+    if (isChatExpanded) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isChatExpanded]);
+
+  // Auto-scroll chat to bottom
+  useEffect(() => {
+    if (isChatExpanded) {
+      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, isChatExpanded]);
+
+  // Focus input when expanded
+  useEffect(() => {
+    if (isChatExpanded) {
+      setTimeout(() => chatInputRef.current?.focus(), 150);
+    }
+  }, [isChatExpanded]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isChatExpanded) {
+        setIsChatExpanded(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isChatExpanded]);
+
+  // Send Chat message handler
+  const handleSendMessage = async (customMessage?: string) => {
+    const msgToSend = (customMessage || chatInput).trim();
+    if (!msgToSend || isSendingMessage || !data) return;
+
+    const userMsg: ChatMessage = { role: 'user', content: msgToSend };
+    const nextHistory = [...chatMessages, userMsg];
+    setChatMessages(nextHistory);
+    setChatInput('');
+    setIsSendingMessage(true);
+
+    try {
+      const reply = await sendChatMessage(data.transaction_id, msgToSend, chatMessages);
+      setChatMessages([...nextHistory, { role: 'assistant', content: reply }]);
+    } catch (err) {
+      console.error(err);
+      setChatMessages([
+        ...nextHistory,
+        {
+          role: 'assistant',
+          content: `Unable to fetch live model response. Deterministic verification: Transaction ${data.transaction_id} is ${data.overall_status}. Recommended action: ${data.recommended_action || 'Review transaction telemetry.'}`,
+        },
+      ]);
+    } finally {
+      setIsSendingMessage(false);
+    }
   };
 
   useEffect(() => {
@@ -610,6 +683,21 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
                 {explanation || 'No explanation generated yet.'}
               </div>
             )}
+
+            {/* Interactive Chat Entry Bar (Triggers Expansion with Full Blur) */}
+            <div 
+              onClick={() => setIsChatExpanded(true)}
+              className="p-3.5 px-5 rounded-full bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] flex items-center justify-between cursor-pointer hover:border-[#9FE870]/60 transition-colors group"
+            >
+              <div className="flex items-center gap-3 text-xs sm:text-sm text-[#6C6D77] dark:text-[#9B9CA6]">
+                <span className="material-symbols-outlined text-[18px] text-[#2D5A0F] dark:text-[#9FE870]">chat</span>
+                <span>Ask AI Copilot about {data.transaction_id}...</span>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] text-xs font-semibold group-hover:scale-105 transition-transform flex items-center gap-1.5">
+                <span>Expand Chat</span>
+                <span className="material-symbols-outlined text-[14px]">open_in_full</span>
+              </span>
+            </div>
           </div>
 
           <div className="pt-4 border-t border-[#E8EAEF] dark:border-[#2E2F38] flex items-center justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
@@ -659,6 +747,181 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
           </div>
         </div>
       </div>
+
+      {/* ── EXPANDED AI CHATBOT MODAL WITH FULL BACKGROUND BLUR ────────────── */}
+      {isChatExpanded && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-[#14151A]/80 dark:bg-[#0E0F12]/85 backdrop-blur-md transition-all duration-300 ease-out"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsChatExpanded(false);
+          }}
+        >
+          <div 
+            className="w-full max-w-4xl h-[90vh] max-h-[820px] flex flex-col rounded-3xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38] shadow-2xl overflow-hidden transition-all duration-300 ease-out transform scale-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 border-b border-[#E8EAEF] dark:border-[#2E2F38] flex items-center justify-between bg-white dark:bg-[#1E1F26]">
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center font-bold shrink-0">
+                  <span className="material-symbols-outlined text-[22px]">psychology</span>
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-[#14151A] dark:text-[#EDEDF0] text-lg">
+                      Settlement Copilot
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#9FE870]/12 text-[#2D5A0F] dark:text-[#9FE870] border border-[#9FE870]/20">
+                      Zero Hallucination
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+                    <span className="font-mono font-medium text-[#14151A] dark:text-[#EDEDF0]">{data.transaction_id}</span>
+                    <span>•</span>
+                    <span>{data.currency === 'USD' ? '$' : '₹'}{data.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                    <span>•</span>
+                    <span className="font-semibold text-[#2D5A0F] dark:text-[#9FE870]">{data.overall_status}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cross Exit Button with Smooth Animation */}
+              <button
+                onClick={() => setIsChatExpanded(false)}
+                className="w-10 h-10 rounded-full bg-[#F4F5F7] dark:bg-[#26272E] hover:bg-[#E8EAEF] dark:hover:bg-[#2E2F38] text-[#14151A] dark:text-[#EDEDF0] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 border border-[#E2E5E9] dark:border-[#2E2F38]"
+                title="Exit Chat (Esc)"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            {/* Synthesis Insight Sub-bar */}
+            <div className="px-6 py-2.5 bg-[#F8F9FA] dark:bg-[#14151A] border-b border-[#E8EAEF] dark:border-[#2E2F38] flex items-center justify-between text-xs text-[#6C6D77] dark:text-[#9B9CA6]">
+              <div className="flex items-center gap-2 truncate pr-4">
+                <span className="material-symbols-outlined text-[16px] text-[#2D5A0F] dark:text-[#9FE870]">verified</span>
+                <span className="truncate">
+                  <strong>Evidence Context:</strong> {data.delay_point ? `Bottleneck at ${data.delay_point}` : 'All 3 rails in sync'} • {data.confidence} match • {data.evidence.length} verified facts
+                </span>
+              </div>
+              <span className="shrink-0 text-[11px] font-mono text-[#6C6D77] dark:text-[#9B9CA6]">PayTrace AI</span>
+            </div>
+
+            {/* Chat Messages Scroll Container */}
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 flex flex-col gap-4 bg-[#FFFFFF] dark:bg-[#17181F]">
+              {/* Initial Welcome Bubble */}
+              <div className="flex items-start gap-3 max-w-[88%]">
+                <div className="w-8 h-8 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                  <span className="material-symbols-outlined text-[16px]">smart_toy</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#F4F5F7] dark:bg-[#26272E] border border-[#E2E5E9] dark:border-[#2E2F38] text-xs sm:text-sm text-[#14151A] dark:text-[#EDEDF0] leading-relaxed">
+                  <p className="font-semibold mb-1">SettlementTrace Copilot Initialized</p>
+                  <p>
+                    I am grounded in the verified telemetry of case <strong>{data.transaction_id}</strong> ({data.currency} {data.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}).
+                    Ask me any question about the timeline, reconciliation exceptions, or request a drafted bank escalation notice.
+                  </p>
+                  {explanation && (
+                    <div className="mt-3 p-3 rounded-xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38] text-xs text-[#6C6D77] dark:text-[#9B9CA6] whitespace-pre-line">
+                      <span className="font-semibold block mb-1 text-[#14151A] dark:text-[#EDEDF0]">Initial AI Analysis:</span>
+                      {explanation}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Dynamic Chat Messages */}
+              {chatMessages.map((msg, index) => (
+                <div 
+                  key={index} 
+                  className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      <span className="material-symbols-outlined text-[16px]">smart_toy</span>
+                    </div>
+                  )}
+                  <div 
+                    className={`p-4 rounded-2xl max-w-[85%] text-xs sm:text-sm leading-relaxed ${
+                      msg.role === 'user' 
+                        ? 'bg-[#14151A] text-[#EDEDF0] dark:bg-[#9FE870] dark:text-[#14151A] font-medium' 
+                        : 'bg-[#F4F5F7] dark:bg-[#26272E] border border-[#E2E5E9] dark:border-[#2E2F38] text-[#14151A] dark:text-[#EDEDF0] whitespace-pre-line'
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
+                  {msg.role === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-[#E8EAEF] dark:bg-[#2E2F38] text-[#14151A] dark:text-[#EDEDF0] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      <span className="material-symbols-outlined text-[16px]">person</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Loading Indicator */}
+              {isSendingMessage && (
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                    <span className="material-symbols-outlined text-[16px]">smart_toy</span>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-[#F4F5F7] dark:bg-[#26272E] border border-[#E2E5E9] dark:border-[#2E2F38] flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#9FE870] animate-bounce" />
+                    <span className="w-2 h-2 rounded-full bg-[#9FE870] animate-bounce [animation-delay:0.2s]" />
+                    <span className="w-2 h-2 rounded-full bg-[#9FE870] animate-bounce [animation-delay:0.4s]" />
+                    <span className="text-xs text-[#6C6D77] dark:text-[#9B9CA6] ml-2">Synthesizing evidence...</span>
+                  </div>
+                </div>
+              )}
+
+              <div ref={chatBottomRef} />
+            </div>
+
+            {/* Suggested Questions Chips */}
+            <div className="p-3 px-5 bg-white dark:bg-[#1E1F26] border-t border-[#E8EAEF] dark:border-[#2E2F38] flex flex-wrap items-center gap-2">
+              <span className="text-[11px] text-[#6C6D77] dark:text-[#9B9CA6] font-medium mr-1">Suggested:</span>
+              {[
+                'Why is the bank pending?',
+                'Draft bank escalation email',
+                'Is this delay within SLA?',
+                'Explain amount mismatch'
+              ].map((q, idx) => (
+                <button
+                  key={idx}
+                  disabled={isSendingMessage}
+                  onClick={() => handleSendMessage(q)}
+                  className="px-3 py-1 rounded-full text-xs bg-[#F4F5F7] dark:bg-[#14151A] hover:bg-[#E8EAEF] dark:hover:bg-[#26272E] text-[#14151A] dark:text-[#EDEDF0] border border-[#E2E5E9] dark:border-[#2E2F38] transition-colors disabled:opacity-50"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+
+            {/* Bottom Typing Bar */}
+            <div className="p-4 sm:p-5 bg-white dark:bg-[#1E1F26] border-t border-[#E8EAEF] dark:border-[#2E2F38]">
+              <form 
+                onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
+                className="flex items-center gap-2 p-1.5 pl-5 rounded-full bg-[#F8F9FA] dark:bg-[#14151A] border border-[#E2E5E9] dark:border-[#2E2F38] focus-within:border-[#9FE870]/60 transition-colors"
+              >
+                <input
+                  ref={chatInputRef}
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  disabled={isSendingMessage}
+                  placeholder={`Ask a question about ${data.transaction_id}...`}
+                  className="flex-1 bg-transparent text-xs sm:text-sm text-[#14151A] dark:text-[#EDEDF0] placeholder:text-[#6C6D77] dark:placeholder:text-[#9B9CA6] focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={!chatInput.trim() || isSendingMessage}
+                  className="px-5 py-2.5 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] hover:brightness-105 active:scale-[0.98] font-semibold text-xs sm:text-sm transition-all disabled:opacity-40 flex items-center gap-1.5"
+                >
+                  <span>Send</span>
+                  <span className="material-symbols-outlined text-[16px]">send</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Toast Notification */}
       {toastMessage && (
