@@ -46,18 +46,21 @@ def load_data() -> None:
 
 
 def get_gateway() -> pd.DataFrame:
+    global _gateway_df
     if _gateway_df is None:
-        raise RuntimeError("Data not loaded. Call load_data() first.")
+        load_data()
     return _gateway_df
 
 
 def get_bank() -> pd.DataFrame:
+    global _bank_df
     if _bank_df is None:
-        raise RuntimeError("Data not loaded. Call load_data() first.")
+        load_data()
     return _bank_df
 
 
 def get_ledger() -> pd.DataFrame:
+    global _ledger_df
     if _ledger_df is None:
-        raise RuntimeError("Data not loaded. Call load_data() first.")
+        load_data()
     return _ledger_df

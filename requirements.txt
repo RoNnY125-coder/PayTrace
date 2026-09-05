@@ -4,4 +4,5 @@ pandas
 pydantic
 python-dotenv
 httpx
+google-genai==1.2.0
 google-generativeai
