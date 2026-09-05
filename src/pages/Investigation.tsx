@@ -35,11 +35,14 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
   useEffect(() => {
     if (isChatExpanded) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [isChatExpanded]);
 
@@ -751,13 +754,15 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
       {/* ── EXPANDED AI CHATBOT MODAL WITH FULL BACKGROUND BLUR ────────────── */}
       {isChatExpanded && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-[#14151A]/80 dark:bg-[#0E0F12]/85 backdrop-blur-md transition-all duration-300 ease-out"
+          data-lenis-prevent="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-[#14151A]/80 dark:bg-[#0E0F12]/85 backdrop-blur-md transition-all duration-300 ease-out overscroll-contain"
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsChatExpanded(false);
           }}
         >
           <div 
-            className="w-full max-w-4xl h-[90vh] max-h-[820px] flex flex-col rounded-3xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38] shadow-2xl overflow-hidden transition-all duration-300 ease-out transform scale-100"
+            data-lenis-prevent="true"
+            className="w-full max-w-4xl h-[90vh] max-h-[820px] flex flex-col rounded-3xl bg-white dark:bg-[#1E1F26] border border-[#E2E5E9] dark:border-[#2E2F38] shadow-2xl overflow-hidden transition-all duration-300 ease-out transform scale-100 overscroll-contain"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -807,7 +812,11 @@ export const Investigation: React.FC<InvestigationProps> = ({ txId, setActivePag
             </div>
 
             {/* Chat Messages Scroll Container */}
-            <div className="flex-1 overflow-y-auto p-5 sm:p-6 flex flex-col gap-4 bg-[#FFFFFF] dark:bg-[#17181F]">
+            <div 
+              data-lenis-prevent="true"
+              onWheel={(e) => e.stopPropagation()}
+              className="flex-1 overflow-y-auto p-5 sm:p-6 flex flex-col gap-4 bg-[#FFFFFF] dark:bg-[#17181F] overscroll-contain"
+            >
               {/* Initial Welcome Bubble */}
               <div className="flex items-start gap-3 max-w-[88%]">
                 <div className="w-8 h-8 rounded-full bg-[#14151A] text-[#9FE870] dark:bg-[#9FE870] dark:text-[#14151A] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
