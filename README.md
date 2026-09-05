@@ -77,6 +77,52 @@ Aggregates all transactions for a given date.
 
 Sends verified evidence to Gemini 2.5 Flash for natural language reasoning.
 
+**Request:**
+```json
+{
+  "transaction_id": "DEMO004"
+}
+```
+
+**Response:**
+```json
+{
+  "transaction_id": "DEMO004",
+  "overall_status": "CRITICAL_EXCEPTION",
+  "explanation": "Settlement Status: CRITICAL_EXCEPTION\nExplanation: The transaction is in a CRITICAL_EXCEPTION status due to an amount mismatch between the Gateway and the Bank..."
+}
+```
+
+### 4. Interactive Transaction Copilot Chat
+`POST /api/chat`
+
+Conversational follow-up assistant grounded strictly in verified transaction evidence. Supports multi-turn chat history for operations inquiries.
+
+**Request:**
+```json
+{
+  "transaction_id": "DEMO004",
+  "message": "Can I safely retry or refund this transaction?",
+  "history": [
+    {
+      "role": "user",
+      "content": "Why is the status CRITICAL_EXCEPTION?"
+    },
+    {
+      "role": "assistant",
+      "content": "The transaction has an amount mismatch: Gateway captured 1500 INR, but Bank settled 1200 INR."
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "transaction_id": "DEMO004",
+  "reply": "No, you should not safely retry or refund this payment right now. The transaction was already captured and partially settled for ₹1200. Retrying might charge the customer twice. You must first investigate the ₹300 discrepancy with the bank."
+}
+```
 ---
 
 ## 🎯 Benchmark & Test Scenarios

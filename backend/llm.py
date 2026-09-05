@@ -81,71 +81,94 @@ def _build_evidence_payload(result) -> str:
     return json.dumps(payload, indent=2)
 
 
+# Candidate Gemini models with separate free quotas
+GEMINI_MODELS = [
+    "gemini-flash-latest",
+    "gemini-flash-lite-latest",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-2.5-flash",
+]
+
+
+def _call_groq(user_prompt: str, system_prompt: str) -> str | None:
+    """Optional Groq fallback if GROQ_API_KEY is configured in .env."""
+    groq_key = os.getenv("GROQ_API_KEY")
+    if not groq_key or groq_key == "your_groq_api_key_here":
+        return None
+    try:
+        import httpx
+        resp = httpx.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {groq_key}"},
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "temperature": 0.1,
+            },
+            timeout=15.0,
+        )
+        if resp.status_code == 200:
+            return resp.json()["choices"][0]["message"]["content"].strip()
+    except Exception:
+        pass
+    return None
+
+
 def explain_with_llm(result) -> str:
     """
     Send verified evidence to Gemini and return the explanation.
-    Falls back gracefully if the API is unavailable or the key is invalid.
+    Automatically cascades through models if a 429 quota limit is reached.
     """
     api_key = os.getenv("LLM_API_KEY")
     if not api_key or api_key == "your_gemini_api_key_here":
+        # Check if Groq key exists
+        groq_resp = _call_groq(_build_evidence_payload(result), _SYSTEM_PROMPT)
+        if groq_resp:
+            return groq_resp
         return _fallback_explanation(result)
 
-    try:
-        # Try new google-genai SDK first
-        from google import genai
-        from google.genai import types
+    evidence_payload = _build_evidence_payload(result)
+    user_message = f"Explain the following verified transaction evidence:\n\n{evidence_payload}"
 
-        client = genai.Client(api_key=api_key)
-        evidence_payload = _build_evidence_payload(result)
-        user_message = (
-            f"Explain the following verified transaction evidence:\n\n{evidence_payload}"
-        )
-
-        for model_name in ["gemini-3.6-flash", "gemini-2.5-flash"]:
-            try:
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=user_message,
-                    config=types.GenerateContentConfig(
-                        system_instruction=_SYSTEM_PROMPT,
-                        temperature=0.1,  # Low temperature for factual, consistent output
-                    ),
-                )
-                if response.text and response.text.strip():
-                    return response.text.strip()
-            except Exception as model_err:
-                # Log model error and seamlessly try next candidate
-                warnings.warn(f"[Gemini API] {model_name} error: {model_err}")
-                continue
-
-        return _fallback_explanation(result)
-
-    except ImportError:
-        # Fall back to old SDK
-        return _explain_with_old_sdk(result, api_key)
-
-    except Exception:
-        return _fallback_explanation(result)
-
-
-def _explain_with_old_sdk(result, api_key: str) -> str:
-    """Fallback to deprecated google-generativeai SDK."""
+    # Try Gemini models with automatic 429 quota failover
+    last_err = None
     try:
         import warnings
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             import google.generativeai as genai_old  # type: ignore
             genai_old.configure(api_key=api_key)
-            model = genai_old.GenerativeModel(
-                model_name="gemini-2.5-flash",
-                system_instruction=_SYSTEM_PROMPT,
-            )
-            evidence_payload = _build_evidence_payload(result)
-            user_message = f"Explain the following verified transaction evidence:\n\n{evidence_payload}"
-            response = model.generate_content(user_message)
-            return response.text.strip()
+
+            for model_name in GEMINI_MODELS:
+                try:
+                    model = genai_old.GenerativeModel(
+                        model_name=model_name,
+                        system_instruction=_SYSTEM_PROMPT,
+                    )
+                    response = model.generate_content(user_message)
+                    if response and response.text:
+                        return response.text.strip()
+                except Exception as model_err:
+                    last_err = model_err
+                    # If 429 ResourceExhausted or quota, continue to next model in cascade
+                    err_str = str(model_err).lower()
+                    if "429" in err_str or "quota" in err_str or "resourceexhausted" in err_str:
+                        continue
+                    # For other fatal errors, also try next model before giving up
+                    continue
+
     except Exception as exc:
-        return f"[LLM unavailable: {type(exc).__name__}]\n\n{_fallback_explanation(result)}"
+        last_err = exc
+
+    # If Gemini models exhausted, try Groq fallback if configured
+    groq_resp = _call_groq(user_message, _SYSTEM_PROMPT)
+    if groq_resp:
+        return groq_resp
+
+    return f"[LLM unavailable: {type(last_err).__name__ if last_err else 'QuotaExceeded'}]\n\n{_fallback_explanation(result)}"
 
 
 def _fallback_explanation(result) -> str:
@@ -173,3 +196,133 @@ def _fallback_explanation(result) -> str:
     lines.append(f"Confidence: {result.confidence}")
 
     return "\n".join(lines)
+
+
+# ── Interactive Chatbot Engine ──────────────────────────────────────────────
+
+_CHAT_SYSTEM_PROMPT = """You are SettlementTrace Support Copilot, an expert fintech reconciliation assistant.
+You are helping an operations analyst, finance engineer, or customer support specialist investigate a specific transaction.
+
+CRITICAL RULES:
+1. Ground every answer strictly and exclusively in the verified facts provided below.
+2. NEVER invent reasons, external outages, bank maintenance, network failures, or fraud unless explicitly confirmed in the evidence.
+3. If asked why something happened and the evidence does not state the root cause (e.g. why bank is pending), explicitly state that the exact reason is not in the system records.
+4. You may help draft emails, support tickets, or escalation notices to the bank, payment gateway, or ledger operations team using confirmed reference IDs, amounts, and dates.
+5. Keep answers professional, concise, helpful, and operationally accurate.
+"""
+
+
+def _call_groq_chat(message: str, system_prompt: str, history: list[dict] | None = None) -> str | None:
+    """Optional Groq multi-turn chat fallback."""
+    groq_key = os.getenv("GROQ_API_KEY")
+    if not groq_key or groq_key == "your_groq_api_key_here":
+        return None
+    try:
+        import httpx
+        messages = [{"role": "system", "content": system_prompt}]
+        if history:
+            for item in history:
+                role = "user" if item.get("role") == "user" else "assistant"
+                content = item.get("content", "").strip()
+                if content:
+                    messages.append({"role": role, "content": content})
+        messages.append({"role": "user", "content": message})
+        resp = httpx.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {groq_key}"},
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": messages,
+                "temperature": 0.1,
+            },
+            timeout=15.0,
+        )
+        if resp.status_code == 200:
+            return resp.json()["choices"][0]["message"]["content"].strip()
+    except Exception:
+        pass
+    return None
+
+
+def chat_with_llm(result, message: str, history: list[dict] | None = None) -> str:
+    """
+    Conversational follow-up assistant grounded in the deterministic facts of a specific transaction.
+    Cascades through models automatically if quota is exhausted.
+    """
+    api_key = os.getenv("LLM_API_KEY")
+    evidence_payload = _build_evidence_payload(result)
+    system_instruction = (
+        f"{_CHAT_SYSTEM_PROMPT}\n\n"
+        f"[CURRENT TRANSACTION VERIFIED EVIDENCE]\n"
+        f"{evidence_payload}"
+    )
+
+    if not api_key or api_key == "your_gemini_api_key_here":
+        groq_resp = _call_groq_chat(message, system_instruction, history)
+        if groq_resp:
+            return groq_resp
+        return _fallback_chat(result, message)
+
+    last_err = None
+    try:
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            import google.generativeai as genai_old  # type: ignore
+            genai_old.configure(api_key=api_key)
+
+            # Build Gemini history format
+            gemini_history = []
+            if history:
+                for item in history:
+                    raw_role = item.get("role", "user")
+                    role = "user" if raw_role == "user" else "model"
+                    content = item.get("content", "").strip()
+                    if not content:
+                        continue
+                    if gemini_history and gemini_history[-1]["role"] == role:
+                        gemini_history[-1]["parts"][0] += f"\n{content}"
+                    else:
+                        gemini_history.append({"role": role, "parts": [content]})
+
+                while gemini_history and gemini_history[0]["role"] != "user":
+                    gemini_history.pop(0)
+
+            for model_name in GEMINI_MODELS:
+                try:
+                    model = genai_old.GenerativeModel(
+                        model_name=model_name,
+                        system_instruction=system_instruction,
+                    )
+                    chat = model.start_chat(history=list(gemini_history))
+                    response = chat.send_message(message)
+                    if response and response.text:
+                        return response.text.strip()
+                except Exception as model_err:
+                    last_err = model_err
+                    err_str = str(model_err).lower()
+                    if "429" in err_str or "quota" in err_str or "resourceexhausted" in err_str:
+                        continue
+                    continue
+
+    except Exception as exc:
+        last_err = exc
+
+    # Try Groq fallback if Gemini models are exhausted
+    groq_resp = _call_groq_chat(message, system_instruction, history)
+    if groq_resp:
+        return groq_resp
+
+    return (
+        f"[Notice: Daily free quota reached for primary model. Displaying deterministic verification]\n\n"
+        f"{_fallback_chat(result, message)}"
+    )
+
+
+def _fallback_chat(result, message: str) -> str:
+    return (
+        f"Deterministic mode: Transaction {result.transaction_id} is currently {result.overall_status}. "
+        f"Verified action: {result.recommended_action}. "
+        f"Exceptions: {', '.join(result.exceptions) if result.exceptions else 'None'}."
+    )
+

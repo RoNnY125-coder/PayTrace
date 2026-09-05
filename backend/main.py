@@ -18,8 +18,10 @@ from backend.models import (
     ExplainRequest,
     ExplainResponse,
     DateSummary,
+    ChatRequest,
+    ChatResponse,
 )
-from backend.llm import explain_with_llm
+from backend.llm import explain_with_llm, chat_with_llm
 
 # ── App setup ──────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -188,3 +190,25 @@ def explain_transaction(body: ExplainRequest) -> ExplainResponse:
         overall_status=result.overall_status,
         explanation=explanation,
     )
+
+
+@app.post(
+    "/api/chat",
+    response_model=ChatResponse,
+    tags=["AI"],
+    summary="Chat with the AI Copilot about a transaction",
+)
+def chat_transaction(body: ChatRequest) -> ChatResponse:
+    """
+    Conversational follow-up assistant grounded strictly in verified transaction evidence.
+    Supports chat history for back-and-forth investigation and inquiry.
+    """
+    result = investigate(body.transaction_id.upper())
+    history_dicts = [h.model_dump() for h in body.history]
+    reply = chat_with_llm(result, body.message, history_dicts)
+
+    return ChatResponse(
+        transaction_id=result.transaction_id,
+        reply=reply,
+    )
+
