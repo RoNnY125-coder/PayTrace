@@ -81,14 +81,13 @@ def _build_evidence_payload(result) -> str:
     return json.dumps(payload, indent=2)
 
 
-# Candidate Gemini models with separate free quotas
+# Candidate Gemini models with separate free quotas (verified working on API)
 GEMINI_MODELS = [
     "gemini-3.5-flash-lite",
-    "gemini-3.1-flash-lite-preview",
     "gemini-flash-lite-latest",
-    "gemini-flash-latest",
+    "gemini-3.5-flash",
     "gemini-3.6-flash",
-    "gemini-2.5-flash",
+    "gemini-3.7-flash",
 ]
 
 
